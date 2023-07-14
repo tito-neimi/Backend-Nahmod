@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Jean",
+    "description": "Un Jean",
+    "price": 200,
+    "thumbnail": "#",
+    "code": 1001,
+    "stock": 20,
+    "id": "1ae4f41d0f8640d6861121c73d5f665f"
+  },
+  {
+    "title": "Musuculosa de hombre",
+    "description": "Una musculosa para hombre",
+    "price": 999,
+    "thumbnail": "#",
+    "code": 1002,
+    "stock": 434,
+    "id": "b0551b8e5c074595ba5db6734e49e80d"
+  },
+  {
+    "title": "Zapatos",
+    "description": "Unos zapatos",
+    "price": 123,
+    "thumbnail": "#",
+    "code": 1003,
+    "stock": 232,
+    "id": "32151b8e5c074595s6ytb6734e49e80d"
+  },
+  {
+    "title": "Tacones",
+    "description": "Unos Tacones",
+    "price": 432,
+    "thumbnail": "#",
+    "code": 1004,
+    "stock": 432,
+    "id": "sd33sdc074595s6ytb6734e49e80d"
+  },
+  {
+    "title": "Sombrero",
+    "description": "Un sombrero",
+    "price": 223,
+    "thumbnail": "#",
+    "code": 1005,
+    "stock": 532,
+    "id": "3sd21b8e5c074595s6ytb6734e49e80d"
+  }
+]

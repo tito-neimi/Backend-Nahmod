@@ -1,0 +1,25 @@
+{
+  "name": "ecommerce",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": " nodemon ./scripts/index.js",
+    "start:express": "nodemon ./scripts/app"
+  },
+  "author": "Joaquin Nahmod",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tito-neimi/Backend-Nahmod.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tito-neimi/Backend-Nahmod/issues"
+  },
+  "homepage": "https://github.com/tito-neimi/Backend-Nahmod#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^4.18.2",
+    "nodemon": "^2.0.22"
+  }
+}
