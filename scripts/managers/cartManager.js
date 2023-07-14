@@ -33,20 +33,21 @@ class cartManager {
     this.Update()
   }
 
-  getCartById(id) {
-    let index = this.carts.findIndex((cart) => cart.cartId == +id);
+  getCartById(cid) {
+    let index = this.carts.findIndex((cart) => cart.cartId == cid);
     if (index === -1) {
-      console.error(`Error CartId:${id} not found`);
+      console.error(`Error CartId:${cid} not found`);
       return false
     } else {
       return this.carts[index];
     }
   }
 
-  getId (id, cid){
+  getId (cid, id){
     let cart = this.getCartById(cid)
-    index =  cart.cartProducts.findIndex(item => item.id == id)
+    const index = cart.cartProducts.findIndex(item => item.id == id)
     if (index === -1) {
+      console.log("Producto con el id", id, "no encontrado")
       return false
     } else {
       return this.carts[index];
@@ -55,8 +56,8 @@ class cartManager {
 
   addProductToCart (cid,item) {
     if (!this.getId(cid, item.id)) {
-      const cartIndex = getCartById(cid)
-      this.carts[cartIndex].cartProducts.push(item);
+      const cartIndex = this.getCartById(cid)
+      cartIndex.cartProducts.push(item);
       this.Update()
       return true;
     } else {
