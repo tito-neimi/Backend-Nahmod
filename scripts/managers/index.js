@@ -11,7 +11,7 @@ class productManager {
 
    async setProductos () {
     const data = await fs.readFile("productos.json", 'utf-8');
-    this.productos =  JSON.parse(data);
+    this.productos = JSON.parse(data);
 
     return this.productos;
   }
@@ -29,20 +29,20 @@ class productManager {
     }
   }
 
-   deleteProduct (code) {
-    if (!this.getCode(code)) {
+   deleteProduct (id) {
+    if (!this.getProductById(id)) {
       console.error("el producto no existe")
     }
     else {
-      const NewProductos = this.productos.filter(prod => prod.code != code);
-      this.productos = NewProductos;
+      const NewProducts = this.productos.filter(prod => prod.id != id);
+      this.productos = NewProducts;
       console.log("producto eliminado")
       this.Update()
     }
   }
 
    getProductById(id) {
-    let index = this.productos.findIndex((a) => a.id === id);
+    let index = this.productos.findIndex((a) => a.id == id);
     if (index === -1) {
       console.error(`Error id:${id} not found`);
       return false

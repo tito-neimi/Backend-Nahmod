@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const express = require('express')
 
-const ProductManager = require('../../index')
+const ProductManager = require('../../managers/index')
 const productManager = new ProductManager()
 
 router.use(express.json())
@@ -22,19 +22,30 @@ router.get (('/'), async (req, res) => {
 
   if (limit) {
     const filter = products.slice(0, +limit)
-    res.send(filter)
-  }
+    res.render('home', {productos:filter})  }
   else {
-    res.send (products)
+    res.render('home', {productos:products}) 
   }
+})
+
+router.get(('/realtimeproducts/'), (req, res) => {
+  const {password} = req.params
+
+  res.render ('realTimeProducts', {productos: products})
+})
+router.get(('/realtimeproducts/admin'), (req, res) => {
+  const {password} = req.params
+
+  res.render ('realTimeProducts', {productos: products, admin: true})
 })
 
 router.get (('/:code'), async (req, res) => {
 
   const { code } = req.params
   const product = products.find(producto => producto.code === +code);
-  res.send (product)
+  res.render ('displayProduct', {item:product})
 })
+
 
 router.post (('/'), async (req, res) => {
   const { body } = req

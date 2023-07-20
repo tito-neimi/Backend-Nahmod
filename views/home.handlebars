@@ -1,0 +1,16 @@
+<h2 class="text-center my-5">Productos</h2>
+<div id="products" class="d-flex flex-wrap justify-content-center mb-5">
+  {{#each productos}}
+  <div class="card m-2" style="width: 18rem;">
+  <img src={{this.thumbnail}} class="card-img-top" alt="...">
+  <div class="card-body">
+    <h4 class="card-title">{{this.title}}</h4>
+    <h5 class="card-text">${{this.price}}</h5>
+    <p class="card-text">{{this.description}}</p>
+    {{!-- <a href="/api/products/1001" class="btn btn-primary">View</a> --}}
+    {{!-- Falta poner que muestre solo el producto al hacer click al boton --}}
+    </div>
+  </div>
+  {{/each}}
+</div>
+

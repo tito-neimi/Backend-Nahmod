@@ -4,7 +4,7 @@ const express = require('express')
 
 const cartManager = require('../../managers/cartManager')
 const CartManager = new cartManager()
-const ProductManager = require('../../index')
+const ProductManager = require('../../managers/index')
 const productManager = new ProductManager()
 
 router.use(express.json())
