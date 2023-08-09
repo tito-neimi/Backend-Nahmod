@@ -2,7 +2,7 @@
 <div id="products" class="d-flex flex-wrap justify-content-center mb-5">
   {{#each productos}}
   <div class="card m-2" style="width: 18rem;">
-  <img src={{this.thumbnail}} class="card-img-top" alt="...">
+  <img src={{this.thumbnail}} class="card-img-top img-fluid" alt={{this.title}}>
   <div class="card-body">
     <h4 class="card-title">{{this.title}}</h4>
     <h5 class="card-text">${{this.price}}</h5>

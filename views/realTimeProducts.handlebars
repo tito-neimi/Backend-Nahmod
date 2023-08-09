@@ -59,7 +59,7 @@
         <label class="form-check-label" for="ready">Ready</label>
       </div>
 
-      <button type="button" class="btn btn-primary" onclick="addProduct()">Submit</button>
+      <button type="button" class="btn btn-primary" onclick="addProduct() && reset()">Submit</button>
     </form>
   </section>
   <form class="text-center">
@@ -68,7 +68,7 @@
       <label class="input-group-text" for="inputGroupSelect01">Options</label>
       <select class="form-select" id="inputGroupSelect01">
         {{#each productos}}
-          <option value={{this.id}}>{{this.title}}</option>
+          <option value={{this._id}}>{{this.title}}</option>
         {{/each}}
       </select>
       <button class="btn btn-outline-secondary" type="button" onclick="deleteProduct()">Delete</button>

@@ -16,6 +16,9 @@ router.post (('/'), async (req, res) => {
   res.send("Ok")
 })
 
+router.get(("/"), async (req, res) => {
+  res.send(CartManager.getAll())
+})
 router.get (('/:cid'), async (req, res) => {
 
   const { cid } = req.params
