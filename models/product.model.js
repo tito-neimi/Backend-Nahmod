@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose')
+const paginate = require('mongoose-aggregate-paginate-v2')
 
 const schema  = new Schema({
   id: String,
@@ -10,6 +11,7 @@ const schema  = new Schema({
   thumbnail: String
 })
 
+schema.plugin(paginate)  
 
 const ProductModel = model('products', schema)
 

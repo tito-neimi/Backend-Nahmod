@@ -11,6 +11,6 @@ const schema  = new Schema({
 })
 
 
-const CartModel = model('carts', schema)
+const CartModel = model('users', schema)
 
 module.exports = CartModel

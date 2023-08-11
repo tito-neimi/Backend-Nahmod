@@ -9,6 +9,8 @@ const mongoose = require('mongoose')
 const ProductManager = require('./scripts/managers/index')
 const productManager = new ProductManager()
 const chatMessageManager = require('./scripts/managers/chatManager')
+const cartManager = require('./scripts/managers/cartManager')
+const CartManager = new cartManager()
 
 const port = 8080;
 
@@ -23,7 +25,7 @@ app.set('view engine', 'handlebars')
 app.use('/static', express.static(path.join(__dirname,'/public')))
 
 mongoose.set('strictQuery', true)
-mongoose.connect("mongodb+srv://app:shJC72qyXeSLyNf3@cluster0.bf73bfz.mongodb.net/ecommerce?retryWrites=true&w=majority"), (error) => {
+mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority"), (error) => {
   if (error) {
     console.log('coneccion fallida', error)
     process.exit()
@@ -59,10 +61,16 @@ io.on('connection', async (socket) => {
     socket.broadcast.emit('add-message', message)
   })
 
+  socket.on('addToCart', async (cid, pid, quantity) => {
+    await CartManager.addProductToCart(cid, {pid: pid, quantity:quantity})
+  })  
+
   socket.on ('addProduct', async (data) => {
     await productManager.addProduct(data)
     io.emit('dataUpdated', await productManager.getAll())
   })
+
+  
 
   socket.on('disconnect', () => {
     console.log('usuario desconectado')

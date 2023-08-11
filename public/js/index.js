@@ -1,6 +1,5 @@
 
 
-console.log('ola')
 const socket = io()
 
 const deleteProduct = () => {
@@ -9,18 +8,27 @@ const deleteProduct = () => {
   socket.emit('deleteProduct', id)
 }
 
-const addProduct = () => {
+const addProduct = async () => {
   event.preventDefault();
-  const form = document.getElementById('formProduct');
+  const form =  document.getElementById('formProduct');
   const datos = Object.fromEntries(new FormData(form))
+  socket.emit('addProduct', datos )
+  console.log(datos)
   form.reset()
-  //socket.emit('addProduct', datos )
 }
 
+const userr = {
+  name: "Joa",
+  cid: "64d56f61d1f7884b293dcfc1"
+}
 
 const reset = () => {
   const formu = document.getElementById('formProduct');
   formu.reset()
+}
+
+const addProductToCart = (pid) => {
+  socket.emit('addToCart',userr.cid ,pid, 1)
 }
 
 socket.on('dataUpdated', (products) => {
@@ -39,4 +47,29 @@ socket.on('dataUpdated', (products) => {
   });
   container.innerHTML = result
 
+})
+
+const radioBtn = document.querySelectorAll("input[name='inlineRadioOptions']")
+let sort = 1
+const limit = 10
+const page = 1
+
+
+const findSelected = () => {
+  let select = document.querySelector("input[name='inlineRadioOptions']:checked")
+  sort = select.value
+}
+
+
+
+radioBtn.forEach(radioBtn => {
+  radioBtn.addEventListener('change', findSelected)
+})
+const enlace = document.getElementById("enlace")
+const buttonA = document.getElementById("submitFilters")
+buttonA.addEventListener('click', (event) => {
+  var query = document.getElementById("filterSelected").value
+  event.preventDefault()
+  console.log("hola")
+  window.location.href = `http://localhost:8080/api/products/?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
 })

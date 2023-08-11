@@ -12,23 +12,35 @@ router.use(express.urlencoded({extended: true}))
 let products = [] 
 
 const start = async () => {
-  products = await ProductModel.find().lean()
+  products = await productManager.getAll()
 }
 start();
 
 
 router.get (('/'), async (req, res) => {
-  const { limit } = req.query
-  if (limit) {
-    const products = await ProductModel.find().limit(limit).lean()
-    res.render('home', {productos:products})  }
-  else {
-    const products = await productManager.getAll()
-    res.render('home', {productos:products}) 
-  }
-})
+  let { limit, page, sort, query } = req.query
+  
+  if (!limit) limit = 10
+  if (!page) page = 1
+  if (!sort) sort = 1
+  if (!query) query = null
+  try {
+      const {docs: products, ...pageInfo} = await productManager.getAllByPage(page, limit, sort,  query)
+      console.log(pageInfo)
+      pageInfo.prevLink = pageInfo.hasPrevPage ? `/api/products/?page=${pageInfo.prevPage}&limit=${limit}&query=${query}&sort=${sort}` : null
+      pageInfo.nextLink = pageInfo.hasNextPage ? `/api/products/?page=${pageInfo.nextPage}&limit=${limit}&query=${query}&sort=${sort}` : null
+      console.log(pageInfo)
+      //const responseObjetct = {payload: products, totalPages: pageInfo.totalPages, hasPrevPage: pageInfo.hasPrevPage, hasNextPage: pageInfo.hasNextPage, prevPage:pageInfo.prevPage, nextPage:pageInfo.nextPage, prevLink:pageInfo.prevLink, nextLink:pageInfo.nextLink}
+      res.render('home', {productos:products, pageInfo:pageInfo})
+    }
+    catch (error) {
+      res.status(404).send("parametros erroneos")
+      console.error(error)
+    }
 
-router.get(('/realtimeproducts/'), (req, res) => {
+  }
+)
+router.get(('/realTimeProducts'), (req, res) => {
 
   res.render ('realTimeProducts', {productos: products})
 })
@@ -36,18 +48,19 @@ router.get(('/realtimeproducts/admin'), (req, res) => {
 
   res.render ('realTimeProducts', {productos: products, admin: true})
 })
-
 router.get (('/:id'), async (req, res) => {
 
   const { id } = req.params
-  const product = productManager.getProductById(id)
+  const product = await productManager.getProductById(id)
+  const item = product[0]
   if (!product){
     res.sendStatus(404)
     return
   }
-  res.send(product);
-  res.render ('displayProduct', {item:product})
+  res.render ('displayProduct', {item:item})
 })
+
+ 
 
 
 router.post (('/'), async (req, res) => {
@@ -55,7 +68,7 @@ router.post (('/'), async (req, res) => {
   const product = await productManager.addProduct(body)
   //await productManager.addProduct(body)
   res.send(`Producto creado con el _id ${product._id}` )
-  
+    
 })
 
 router.put (('/:pid'), async (req,res) => {

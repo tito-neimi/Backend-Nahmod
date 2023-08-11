@@ -2,6 +2,7 @@ const fs = require('fs/promises')
 const path = require('path')
 
 const productModel = require('../../models/product.model');
+const { reset } = require('nodemon');
 
 class productManager {
   
@@ -14,6 +15,27 @@ class productManager {
     const products = productModel.find().lean()
     this.productos = products
     return products;
+  }
+
+  async getAllByPage (page = 1, limit, sort = 0, query = null) {
+    const paginateOptions = {page: page, limit:limit}
+    let myAggregate
+    if (query == "null"){
+      myAggregate = productModel.aggregate([{$sort:{price: +sort}}])
+    }
+    else {
+      myAggregate = productModel.aggregate([
+        {
+          $match:{category: query}
+        },
+        {$sort:{price: +sort}}
+    ]) 
+    }
+   
+    
+    const products = await productModel.aggregatePaginate(myAggregate, paginateOptions)
+    return products
+    
   }
 
 
@@ -37,7 +59,8 @@ class productManager {
   }
 
   async getProductById(id) {
-    const product = await productModel.find({_id : id})
+    const product = await productModel.find({_id : id}).lean()
+    console.log("producto", product)
     return product
    }
 
