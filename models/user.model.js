@@ -4,13 +4,14 @@ const schema  = new Schema({
   firstName: String,
   lastName: String,
   email: String,
-  createdDate: {type:String, default: Date.now()},
+  username: String,
   password: String,
-  role: String,
-  products: {type: [String], default:[]}
+  gender: String,
+  createdDate: {type:String, default: Date.now()},
+  role: {type: String, default: "customer"},
 })
 
 
-const CartModel = model('users', schema)
+const userModel = model('users', schema)
 
-module.exports = CartModel
+module.exports = userModel

@@ -2,9 +2,16 @@ const routes = require('./scripts/routes')
 const express = require('express')
 const http = require('http')
 const { Server} = require('socket.io')
+const cookieParser = require('cookie-parser')
 const path = require('path')
 const handlebars = require('express-handlebars')
+const homeRouter = require('./scripts/routes/homeRouter')
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser');
+const session = require('express-session')
+// const fileStore = require('session-file-store')
+const MongoStrore = require('connect-mongo')
+
 
 const ProductManager = require('./scripts/managers/index')
 const productManager = new ProductManager()
@@ -17,12 +24,25 @@ const port = 8080;
 const app = express();
 const server = http.createServer(app)
 const io = new Server(server)
+// const FileStore = fileStore(session)
 
 
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
 app.use('/static', express.static(path.join(__dirname,'/public')))
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser('contraseña'))
+app.use(session({
+  secret: 'contraseña',
+  resave: true,
+  saveUninitialized: true,
+  // store: new FileStore({ path: './sessions', ttl:604800000, retries:5 })
+  store: MongoStrore.create({
+    mongoUrl: "mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority",
+    ttl: 86400
+  })
+}))
 
 mongoose.set('strictQuery', true)
 mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority"), (error) => {
@@ -35,10 +55,22 @@ mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.ne
   }
 }
 
-//Routes
-app.get('/', (req, res) => {
-  res.render('inicio')
+
+app.use( (req, res, next) => {
+  console.log(req.session.user)
+  if (req.session.user) {
+    req.user = {
+      name: req.session.user.username,
+      role: req.session.user.role
+    }
+  }
+  next()
+
+
 })
+
+//Routes
+app.use('/', homeRouter)
 app.use('/api', routes)
 
 io.on('connection', async (socket) => {

@@ -5,6 +5,7 @@ const express = require('express')
 const ProductManager = require('../../managers/index')
 const productManager = new ProductManager()
 const ProductModel = require('../../../models/product.model')
+const { isAdmin, isAuth } = require('../../../middleware/auth.middleware')
 
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
@@ -31,7 +32,7 @@ router.get (('/'), async (req, res) => {
       pageInfo.nextLink = pageInfo.hasNextPage ? `/api/products/?page=${pageInfo.nextPage}&limit=${limit}&query=${query}&sort=${sort}` : null
       console.log(pageInfo)
       //const responseObjetct = {payload: products, totalPages: pageInfo.totalPages, hasPrevPage: pageInfo.hasPrevPage, hasNextPage: pageInfo.hasNextPage, prevPage:pageInfo.prevPage, nextPage:pageInfo.nextPage, prevLink:pageInfo.prevLink, nextLink:pageInfo.nextLink}
-      res.render('home', {productos:products, pageInfo:pageInfo})
+      res.render('home', {productos:products, pageInfo:pageInfo, user: req.session.user})
     }
     catch (error) {
       res.status(404).send("parametros erroneos")
@@ -40,14 +41,15 @@ router.get (('/'), async (req, res) => {
 
   }
 )
-router.get(('/realTimeProducts'), (req, res) => {
+router.get(('/realTimeProducts'), isAuth,isAdmin, (req, res) => {
 
-  res.render ('realTimeProducts', {productos: products})
-})
-router.get(('/realtimeproducts/admin'), (req, res) => {
+  res.render ('realTimeProducts', {productos: products, admin: true, user: req.session.user})
 
-  res.render ('realTimeProducts', {productos: products, admin: true})
 })
+// router.get(('/realtimeproducts/admin'), (req, res) => {
+
+//   res.render ('realTimeProducts', {productos: products, admin: true})
+// })
 router.get (('/:id'), async (req, res) => {
 
   const { id } = req.params
@@ -57,7 +59,7 @@ router.get (('/:id'), async (req, res) => {
     res.sendStatus(404)
     return
   }
-  res.render ('displayProduct', {item:item})
+  res.render ('displayProduct', {item:item, user: req.session.user})
 })
 
  

@@ -1,10 +1,10 @@
 const { Router } = require('express')
 const router = Router()
 
-const chatManager = require('../../managers/chatManager')
+const isAuth = require('../../../middleware/auth.middleware')
 
-router.get('/', (req, res) => {
-  res.render('chat' )
+router.get(('/'), (req, res) => {
+  res.render('chat', {user:req.session.user} )
 })
 
 

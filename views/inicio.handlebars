@@ -1,3 +1,8 @@
-<div class="d-flex justify-content-center align-items-center h-100">
-  <h2>Bienvenido a Plis U</h2>
+<div class="d-flex justify-content-center align-items-center h-100 flex-column gap-3">
+  {{#if user}}
+    <h2>Bienvenido a Plis U {{user.name}}</h2>
+  {{else}}
+    <h2>Bienvenido a Plis U</h2>
+  {{/if}}
+  <a href="/api/products/?query=null" class="text-center">Nuestros productos</a>
 </div>

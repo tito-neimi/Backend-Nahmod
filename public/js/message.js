@@ -1,3 +1,5 @@
+const { Socket } = require("socket.io")
+
 const chatContainer = document.getElementById("messages-Container")
 const inputMessage = document.getElementById('messagesInput')
 const button = document.getElementById('button-addon2')
@@ -15,38 +17,21 @@ if (chatContainer) {
       chatContainer.scrollTo(0, chatContainer.scrollHeight)
     }, 250);
   }
-  
-  let user = null
+  let user 
   let currentMessages = []
   
   socket.on('chat-messages', (messagesList) => {
     currentMessages = messagesList
+    displayMessages(currentMessages)
   })
   
-  
-  const setUser = async () => {
-    await Swal.fire({
-      title: 'Enter your Name',
-      input: 'text',
-      inputLabel: 'YourName',
-      allowOutsideClick: false,
-      inputValidator: (value) => {
-        if (!value) {
-          return 'You need to write your name!'
-        }
-        user = value
-      }
+    socket.on('add-message', (msg) => {
+      console.log("ejecutando mensaje")
+      appendMessage(msg.userName, msg.message, msg.createdDate)
     })
-    
-    displayMessages()
-      socket.on('add-message', (msg) => {
-        console.log("ejecutando mensaje")
-        appendMessage(msg.userName, msg.message, msg.createdDate)
-      })
-  }
-      button.addEventListener('click', () => {
+    button.addEventListener('click', () => {
+      if (user) {
         const inputValue = inputMessage.value
-        console.log(inputValue)
         if (!inputValue){
           return
         }
@@ -58,14 +43,28 @@ if (chatContainer) {
         
         inputMessage.value = ""
         appendMessage(user,inputValue,fecha.toLocaleTimeString('en-US'))
-      })
-      
+      }
+    })
   
-  const displayMessages = () => {
+  const setUser = async () => {
+    socket.emit('getUser', )
+  }
+  
+  const displayMessages = (currentMessages) => {
     for (const {userName, message, createdDate} of currentMessages) {
       appendMessage(userName, message, createdDate)
     }
   }
+  const parseCookies = () => {
+    const cookies = document.cookie.split(';')
+    const obj = cookies.reduce((obj, cookie) => {
+      const keyValue = cookie.split('=')
+      return {...obj, [keyValue[0].trim()]: keyValue[1]}
+    }, {})
+    return obj
+  }
+  const cookies = parseCookies()
   
   setUser()
 }
+  

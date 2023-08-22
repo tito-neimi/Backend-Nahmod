@@ -59,17 +59,17 @@ const findSelected = () => {
   let select = document.querySelector("input[name='inlineRadioOptions']:checked")
   sort = select.value
 }
+const buttonA = document.getElementById("submitFilters")
 
-
+if (buttonA) {
+  buttonA.addEventListener('click', (event) => {
+    var query = document.getElementById("filterSelected").value
+    event.preventDefault()
+    console.log("hola")
+    window.location.href = `http://localhost:8080/api/products/?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
+  })
+}
 
 radioBtn.forEach(radioBtn => {
   radioBtn.addEventListener('change', findSelected)
-})
-const enlace = document.getElementById("enlace")
-const buttonA = document.getElementById("submitFilters")
-buttonA.addEventListener('click', (event) => {
-  var query = document.getElementById("filterSelected").value
-  event.preventDefault()
-  console.log("hola")
-  window.location.href = `http://localhost:8080/api/products/?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
 })
