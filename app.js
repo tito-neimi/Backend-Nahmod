@@ -9,8 +9,8 @@ const homeRouter = require('./scripts/routes/homeRouter')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser');
 const session = require('express-session')
-// const fileStore = require('session-file-store')
 const MongoStrore = require('connect-mongo')
+const passport = require('passport')
 
 
 const ProductManager = require('./scripts/managers/index')
@@ -18,6 +18,8 @@ const productManager = new ProductManager()
 const chatMessageManager = require('./scripts/managers/chatManager')
 const cartManager = require('./scripts/managers/cartManager')
 const CartManager = new cartManager()
+const initPassportLocal = require('./config/passport.local.config')
+
 
 const port = 8080;
 
@@ -55,19 +57,21 @@ mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.ne
   }
 }
 
+initPassportLocal()
+app.use(passport.initialize())
+app.use(passport.session())
 
-app.use( (req, res, next) => {
-  console.log(req.session.user)
-  if (req.session.user) {
-    req.user = {
-      name: req.session.user.username,
-      role: req.session.user.role
-    }
-  }
-  next()
+// app.use( async (req, res, next) => {
+//   if (req.session.user) {
+//     req.user = {
+//       name: req.session.user.username,
+//       role: req.session.user.role
+//     }
+//  }
+//   next()
 
 
-})
+// })
 
 //Routes
 app.use('/', homeRouter)
