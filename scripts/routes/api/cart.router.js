@@ -6,13 +6,25 @@ const cartManager = require('../../managers/cartManager')
 const CartManager = new cartManager()
 const ProductManager = require('../../managers/index')
 const productManager = new ProductManager()
+const cartPopulate = require('../../cart.populate')
 
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
 
 
+const getTotalPrice = (cart) => {
+  let totalPrice = 0
+  for (const product of cart.products) {
+    const subtotal = product._id.price * product.quantity;
+    totalPrice += subtotal;
+}
+  return totalPrice
+}
+
 router.post (('/'), async (req, res) => {
-  await CartManager.newCart() 
+  const { body } = req
+  console.log(body)
+  await CartManager.newCart(body) 
   res.send("Ok")
 })
 
@@ -21,9 +33,14 @@ router.get(("/"), async (req, res) => {
 })
 router.get (('/:cid'), async (req, res) => {
 
-  const { cid } = req.params
-  const cart = await CartManager.getCartById(cid)
-  res.render ('singleCart', {cart: cart})
+  try {
+    const { cid } = req.params
+  const cart = await cartPopulate(cid)
+  const totalPrice = getTotalPrice(cart)
+  res.render ('singleCart', {cart: cart, totalPrice: totalPrice })
+  } catch (error) {
+    res.status(404).send("Error 404 Cart Not found")
+  }
 })
 
 router.post(('/:cid/product/:pid'), async (req, res) => {
@@ -46,7 +63,7 @@ router.delete(('/:cid'), async (req, res) => {
 })
 
 router.put(('/:cid'), async (req, res) => {
-  const {cid} = req.params
+  const { cid } = req.params
   const { body } = req
   const result = await CartManager.updateProductFromCart(cid, body)
   res.send(result)

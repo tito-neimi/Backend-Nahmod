@@ -5,11 +5,11 @@
         <img alt={{item.title}} class="img-fluid rounded-start" src={{item.thumbnail}}  >
       </div>
       <div class="col-md-8">
-        <div class="card-body">
+        <div class="card-body" id="div-body">
           <h5 class="card-title">{{item.title}}</h5>
           <h5 class="card-text">${{item.price}}</h5>
           <p class="card-text">{{item.description}}</p>
-        <button type="button" class="btn btn-primary" onclick='addProductToCart("{{item._id}}")'>Add to cart</button>
+        <button type="button" class="btn btn-primary" id="addButton" onclick='addProductToCart("{{item._id}}")'>Add to cart</button>
         </div>
       </div>
     </div>

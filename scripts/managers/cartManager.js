@@ -19,8 +19,8 @@ class cartManager {
     await fs.writeFile(this.filepaht, JSON.stringify(this.carts))
     }
 
-  async newCart () {
-    const cart = await cartModel.create()
+  async newCart (body) {
+    const cart = await cartModel.create({user: body.user, products: body.products ? body.products : null})
     console.log('carrito agregado')
     this.carts.push(cart)
   }
@@ -31,13 +31,21 @@ class cartManager {
   }
 
   async addProductToCart (cid,item) {
-    const cart = await this.getCartById(cid)
-    cart[0].products.push(item)
-    const newArray = cart[0].products
-    if (cart) {
-      const result = await cartModel.updateOne({_id: cid}, {$set: {products: newArray}})
-      console.log(result)
-    }
+    // const cart = await this.getCartById(cid)
+    // const products = cart[0].products
+    // products.push({_id: item._id, quantity: item.quantity})
+    // if (cart) {
+    //   const result = await cartModel.updateOne({_id: cid}, {$set: {products: products}})
+    //   console.log(result)
+    // }
+    console.log(item.quantity)
+
+     const result = await cartModel.findOneAndUpdate(
+    { _id: cid },
+    { $push: { products: {_id: item._id, quantity: item.quantity} } },
+    { new: true }
+    );
+    console.log(result)
     }
 
   async deleteProductFromCart (cid, pid) {

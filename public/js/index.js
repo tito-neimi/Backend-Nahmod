@@ -19,7 +19,7 @@ const addProduct = async () => {
 
 const userr = {
   name: "Joa",
-  cid: "64d56f61d1f7884b293dcfc1"
+  cid: "64e6544d8c8614f8891a42ed"
 }
 
 const reset = () => {
@@ -29,6 +29,12 @@ const reset = () => {
 
 const addProductToCart = (pid) => {
   socket.emit('addToCart',userr.cid ,pid, 1)
+  const button = document.getElementById('addButton')
+  button.remove()
+  const div = document.getElementById('div-body')
+  var nuevoParrafo = document.createElement("h5");
+      nuevoParrafo.textContent = "Producto Agregado al carrito"
+  div.appendChild(nuevoParrafo)
 }
 
 socket.on('dataUpdated', (products) => {
