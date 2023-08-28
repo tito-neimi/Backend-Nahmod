@@ -97,8 +97,8 @@ io.on('connection', async (socket) => {
     socket.broadcast.emit('add-message', message)
   })
 
-  socket.on('addToCart', async (cid, pid, quantity) => {
-    await CartManager.addProductToCart(cid, {pid: pid, quantity:quantity})
+  socket.on('addToCart', async (cid, pid, quantity = 1) => {
+    await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity})
   })  
 
   socket.on ('addProduct', async (data) => {

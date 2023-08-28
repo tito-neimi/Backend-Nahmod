@@ -26,7 +26,7 @@ router.get (('/'), async (req, res) => {
   if (!sort) sort = 1
   if (!query) query = null
   try {
-      const {docs: products, ...pageInfo} = await productManager.getAllByPage(page, limit, sort,  query)
+      const {docs: products, ...pageInfo} = await productManager.getAllByPage(page, limit, sort, query)
       console.log(pageInfo)
       pageInfo.prevLink = pageInfo.hasPrevPage ? `/api/products/?page=${pageInfo.prevPage}&limit=${limit}&query=${query}&sort=${sort}` : null
       pageInfo.nextLink = pageInfo.hasNextPage ? `/api/products/?page=${pageInfo.nextPage}&limit=${limit}&query=${query}&sort=${sort}` : null

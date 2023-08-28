@@ -17,10 +17,10 @@ class productManager {
     return products;
   }
 
-  async getAllByPage (page = 1, limit, sort = 0, query = null) {
+  async getAllByPage (page, limit, sort, query) {
     const paginateOptions = {page: page, limit:limit}
     let myAggregate
-    if (query == "null"){
+    if (query == "null" || query == null){
       myAggregate = productModel.aggregate([{$sort:{price: +sort}}])
     }
     else {
@@ -31,7 +31,7 @@ class productManager {
         {$sort:{price: +sort}}
     ]) 
     }
-   
+  
     
     const products = await productModel.aggregatePaginate(myAggregate, paginateOptions)
     return products
