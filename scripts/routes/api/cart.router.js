@@ -8,6 +8,8 @@ const ProductManager = require('../../managers/index')
 const productManager = new ProductManager()
 const cartPopulate = require('../../cart.populate')
 
+const {jwtVerifyToken} = require('../../../middleware/jwt.auth')
+
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
 
@@ -43,33 +45,33 @@ router.get (('/:cid'), async (req, res) => {
   }
 })
 
-router.post(('/:cid/product/:pid'), async (req, res) => {
+router.post(('/:cid/product/:pid'),jwtVerifyToken, async (req, res) => {
   const {cid, pid} = req.params
   const item = {id: pid, quantity: 1}
   CartManager.addProductToCart(cid, item)
   res.send("Ok")
 })
 
-router.delete(('/:cid/product/:pid'), async (req, res) => {
+router.delete(('/:cid/product/:pid'), jwtVerifyToken,async (req, res) => {
   const {cid, pid} = req.params
   const result = await CartManager.deleteProductFromCart(cid, pid)
   res.send(result)
 })
 
-router.delete(('/:cid'), async (req, res) => {
+router.delete(('/:cid'),jwtVerifyToken, async (req, res) => {
   const {cid} = req.params
   const result = await CartManager.deleteProductFromCart(cid)
   res.send(result)
 })
 
-router.put(('/:cid'), async (req, res) => {
+router.put(('/:cid'),jwtVerifyToken, async (req, res) => {
   const { cid } = req.params
   const { body } = req
   const result = await CartManager.updateProductFromCart(cid, body)
   res.send(result)
 })
 
-router.put(('/:cid/products/:pid'), async (req, res) => {
+router.put(('/:cid/products/:pid'),jwtVerifyToken, async (req, res) => {
   const {cid, pid} = req.params
   const { body } = req
   const result = await CartManager.updateQuantity(cid,pid,body)

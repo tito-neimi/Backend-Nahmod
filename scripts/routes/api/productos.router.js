@@ -7,6 +7,8 @@ const productManager = new ProductManager()
 const ProductModel = require('../../../models/product.model')
 const { isAdmin, isAuth } = require('../../../middleware/auth.middleware')
 
+const {jwtVerifyToken} = require('../../../middleware/jwt.auth.js')
+
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
 
@@ -46,6 +48,7 @@ router.get(('/realTimeProducts'), isAuth,isAdmin, (req, res) => {
   res.render ('realTimeProducts', {productos: products, admin: true, user: req.session.user})
 
 })
+
 // router.get(('/realtimeproducts/admin'), (req, res) => {
 
 //   res.render ('realTimeProducts', {productos: products, admin: true})

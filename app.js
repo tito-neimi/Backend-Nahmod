@@ -18,7 +18,7 @@ const productManager = new ProductManager()
 const chatMessageManager = require('./scripts/managers/chatManager')
 const cartManager = require('./scripts/managers/cartManager')
 const CartManager = new cartManager()
-const initPassportLocal = require('./config/passport.local.config')
+const initPassportLocal = require('./config/passport.init')
 
 
 const port = 8080;

@@ -1,23 +1,9 @@
-const fs = require('fs/promises')
-const path = require('path')
 const cartModel = require('../../models/cart.model')
-const { captureRejectionSymbol } = require('events')
 
 class cartManager {
   constructor() {
-    this.filepaht = path.join(__dirname, '../../data', 'cart.json')
     this.carts = []
-    this.setCarritos()
   }
-
-  async setCarritos () {
-    const data = await fs.readFile(this.filepaht, 'utf-8');
-    this.carts = JSON.parse(data) || [];
-  }
-  
-  async Update () {
-    await fs.writeFile(this.filepaht, JSON.stringify(this.carts))
-    }
 
   async newCart (body) {
     const cart = await cartModel.create({user: body.user, products: body.products ? body.products : null})
@@ -31,13 +17,6 @@ class cartManager {
   }
 
   async addProductToCart (cid,item) {
-    // const cart = await this.getCartById(cid)
-    // const products = cart[0].products
-    // products.push({_id: item._id, quantity: item.quantity})
-    // if (cart) {
-    //   const result = await cartModel.updateOne({_id: cid}, {$set: {products: products}})
-    //   console.log(result)
-    // }
     console.log(item.quantity)
 
      const result = await cartModel.findOneAndUpdate(

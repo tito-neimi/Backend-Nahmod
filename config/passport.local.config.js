@@ -4,6 +4,7 @@ const local = require('passport-local')
 const userManager = require('../scripts/managers/userManager')
 const {hashPassword, isValidPassword} = require('../utils/password.utils')
 const { estimatedDocumentCount } = require('../models/user.model')
+const {generateToken} = require('../utils/generateToken')
 
 
 const LocalStrategy = local.Strategy
@@ -55,6 +56,9 @@ const login = async (email, password, done) => {
     }
     const {password: _password, ...user} = _user
 
+    const token = generateToken(_user)
+    console.log(token)
+
     done(null, {
       name: user.username,
       id: user._id,
@@ -62,19 +66,8 @@ const login = async (email, password, done) => {
     } ) 
   } catch (error) {
     console.log(error)
-    done(e, false)
+    done(error, false)
   }
 }
-const init = () => {
-  passport.use('local-signup', new LocalStrategy({usernameField: 'email', passReqToCallback: true},signup))
-  passport.use('local-login', new LocalStrategy({usernameField: 'email'}, login))
-  passport.serializeUser((user, done) => {
-    done(null, user.id)
-  })
-  passport.deserializeUser((id, done) => {
-    const user = userManager.getById(id)
-    done(null, user)
-  })
-}
 
-module.exports = init
+module.exports = {signup, login, LocalStrategy}

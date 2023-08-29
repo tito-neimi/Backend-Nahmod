@@ -127,6 +127,17 @@ const resetPassword = async (req, res) => {
   }
 }
 
+const githubLogin = async (req, res) => {
+  const user = req.user
+  req.session.user = {
+    id: user.id,
+    name: user.firstName,
+    role: user.role,
+    email: user.email
+  }
+  res.redirect("/")
+}
+
 homeRouter.get('/login', (_, res) => {
   res.render('login')
 })
@@ -134,6 +145,12 @@ homeRouter.post('/login' , passport.authenticate('local-login', {
   successRedirect :'/',
   failureRedirect: '/login'
 }))
+
+//Rutas GitHub
+
+homeRouter.get('/github', passport.authenticate('github'), (_, res) => {})
+homeRouter.get('/githubSessions', passport.authenticate('github'), githubLogin)
+
 
 homeRouter.get('/logout', isAuth, async (req, res) => {
   const {username} = await req.user
