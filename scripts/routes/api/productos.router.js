@@ -8,6 +8,7 @@ const ProductModel = require('../../../models/product.model')
 const { isAdmin, isAuth } = require('../../../middleware/auth.middleware')
 
 const {jwtVerifyToken} = require('../../../middleware/jwt.auth.js')
+const userManager = require('../../managers/userManager')
 
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
@@ -22,7 +23,12 @@ start();
 
 router.get (('/'), async (req, res) => {
   let { limit, page, sort, query } = req.query
-  
+  let _user
+  if (req.session.passport){
+    _user = userManager.getById(req.session.passport.user)
+  }
+  else{ _user = null}
+
   if (!limit) limit = 10
   if (!page) page = 1
   if (!sort) sort = 1
@@ -34,7 +40,7 @@ router.get (('/'), async (req, res) => {
       pageInfo.nextLink = pageInfo.hasNextPage ? `/api/products/?page=${pageInfo.nextPage}&limit=${limit}&query=${query}&sort=${sort}` : null
       console.log(pageInfo)
       //const responseObjetct = {payload: products, totalPages: pageInfo.totalPages, hasPrevPage: pageInfo.hasPrevPage, hasNextPage: pageInfo.hasNextPage, prevPage:pageInfo.prevPage, nextPage:pageInfo.nextPage, prevLink:pageInfo.prevLink, nextLink:pageInfo.nextLink}
-      res.render('home', {productos:products, pageInfo:pageInfo, user: req.session.user})
+      res.render('home', {productos:products, pageInfo:pageInfo, user: _user })
     }
     catch (error) {
       res.status(404).send("parametros erroneos")

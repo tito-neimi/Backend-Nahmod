@@ -19,6 +19,7 @@ const chatMessageManager = require('./scripts/managers/chatManager')
 const cartManager = require('./scripts/managers/cartManager')
 const CartManager = new cartManager()
 const initPassportLocal = require('./config/passport.init')
+const userManager = require('./scripts/managers/userManager')
 
 
 const port = 8080;
@@ -26,7 +27,6 @@ const port = 8080;
 const app = express();
 const server = http.createServer(app)
 const io = new Server(server)
-// const FileStore = fileStore(session)
 
 
 app.engine('handlebars', handlebars.engine()) 
@@ -39,7 +39,6 @@ app.use(session({
   secret: 'contraseña',
   resave: true,
   saveUninitialized: true,
-  // store: new FileStore({ path: './sessions', ttl:604800000, retries:5 })
   store: MongoStrore.create({
     mongoUrl: "mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority",
     ttl: 86400
@@ -60,18 +59,18 @@ mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.ne
 initPassportLocal()
 app.use(passport.initialize())
 app.use(passport.session())
+let _user
+app.use( async (req, res, next) => {
+  if (req.session.passport) {
+    _user = await userManager.getById(req.session.passport.user)
+ }
+ else{
+  _user = null
+ }
+  next()
 
-// app.use( async (req, res, next) => {
-//   if (req.session.user) {
-//     req.user = {
-//       name: req.session.user.username,
-//       role: req.session.user.role
-//     }
-//  }
-//   next()
 
-
-// })
+})
 
 //Routes
 app.use('/', homeRouter)
@@ -93,7 +92,6 @@ io.on('connection', async (socket) => {
   socket.on('chat-message', (message) => {
     messages.push(message)
     chatMessageManager.createMessage(message)
-    console.log("add", messages)
     socket.broadcast.emit('add-message', message)
   })
 
@@ -105,6 +103,8 @@ io.on('connection', async (socket) => {
     await productManager.addProduct(data)
     io.emit('dataUpdated', await productManager.getAll())
   })
+
+  socket.emit('getUser', _user)
 
   
 

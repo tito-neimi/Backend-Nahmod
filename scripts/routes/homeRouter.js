@@ -7,11 +7,14 @@ const homeRouter = Router()
 
 const userManager = require('../managers/userManager');
 const { log } = require('handlebars');
+const { generateToken } = require('../../utils/generateToken');
 
 
 homeRouter.get('/', async (req, res) => {
-  const _user = await req.user
-  console.log(_user)
+  const _user =  await req.user
+  let token
+  if (req.user) {token = generateToken({_user}); res.cookie('token', token, {httpOnly: true});}
+  
   res.render('inicio',
   {
     user: _user ?  {
@@ -141,10 +144,27 @@ const githubLogin = async (req, res) => {
 homeRouter.get('/login', (_, res) => {
   res.render('login')
 })
-homeRouter.post('/login' , passport.authenticate('local-login', {
-  successRedirect :'/',
-  failureRedirect: '/login'
-}))
+// homeRouter.post('/login', (req, res, next) => {
+//   passport.authenticate('local-login', (error, user, info) => {
+//     if (error) {
+//       return res.render('login', { error: error });
+//     } else {
+//       return res.redirect('/');
+//     }
+//   })(req, res, next);
+// });
+homeRouter.post('/login', passport.authenticate('local-login', 
+{
+    successRedirect: '/',
+    failureRedirect: '/login'
+})
+);
+
+// homeRouter.post('/login' , passport.authenticate('local-login', {
+//   successRedirect :'/',
+//   failureRedirect: '/login',
+
+// }))
 
 //Rutas GitHub
 

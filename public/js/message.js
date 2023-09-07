@@ -1,4 +1,3 @@
-const { Socket } = require("socket.io")
 
 const chatContainer = document.getElementById("messages-Container")
 const inputMessage = document.getElementById('messagesInput')
@@ -20,6 +19,10 @@ if (chatContainer) {
   let user 
   let currentMessages = []
   
+  socket.on('getUser', (data) => {
+    user = data.username
+  })
+
   socket.on('chat-messages', (messagesList) => {
     currentMessages = messagesList
     displayMessages(currentMessages)
@@ -37,6 +40,7 @@ if (chatContainer) {
         }
   
         const fecha = new Date()
+        console.log(fecha)
   
         const message = {userName: user, message: inputValue, createdDate: fecha}
         socket.emit('chat-message', message)
@@ -44,11 +48,10 @@ if (chatContainer) {
         inputMessage.value = ""
         appendMessage(user,inputValue,fecha.toLocaleTimeString('en-US'))
       }
+      else {
+        console.log("usuario no logeado")
+      }
     })
-  
-  const setUser = async () => {
-    socket.emit('getUser', )
-  }
   
   const displayMessages = (currentMessages) => {
     for (const {userName, message, createdDate} of currentMessages) {
@@ -64,7 +67,5 @@ if (chatContainer) {
     return obj
   }
   const cookies = parseCookies()
-  
-  setUser()
-}
+  }
   

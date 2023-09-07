@@ -1,7 +1,6 @@
-const JWT_SECRET = 'secret'
+const JWT_SECRET = 'contraseña'
 const JWT_PAYLOAD = {
   expiresIn: '24h',
-
 }
 
 module.exports = {

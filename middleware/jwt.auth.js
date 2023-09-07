@@ -2,7 +2,8 @@ const jwt = require('jsonwebtoken');
 const { JWT_SECRET, JWT_PAYLOAD } = require('../config/config.jwt');
 
 const jwtVerifyToken = (req, res, next) => {
-  const authHeader = req.headers.authorization
+  const authHeader = req.headers.authorization || req.cookies('token')
+  console.log(authHeader)
 
   if (!authHeader) {
     res.status(401).send({

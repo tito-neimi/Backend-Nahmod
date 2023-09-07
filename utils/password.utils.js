@@ -5,7 +5,6 @@ const hashPassword = (password) => {
 }
 
 const isValidPassword = (psw1, psw2) => {
-  console.log(psw1, psw2)
   return bcrypt.compareSync(psw1, psw2)
 }
 

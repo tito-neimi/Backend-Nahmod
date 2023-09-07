@@ -6,9 +6,10 @@ class cartManager {
   }
 
   async newCart (body) {
-    const cart = await cartModel.create({user: body.user, products: body.products ? body.products : null})
+    const cart = await cartModel.create({user: body.user, products: body ? body.products : null})
     console.log('carrito agregado')
     this.carts.push(cart)
+    return cart._id
   }
 
   async getCartById(cid) {
