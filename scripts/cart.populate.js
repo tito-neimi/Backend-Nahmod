@@ -10,11 +10,9 @@ async function main (cid) {
 
   let cart = await cartModel.findOne({_id: cid })
   .populate({path:'products._id', select: ['title', 'price']})
-  .populate({path: 'user', select: ['firstName', 'lastName']})
   .lean()
   
   return cart
-
 }
 
 module.exports = main

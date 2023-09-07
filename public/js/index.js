@@ -1,5 +1,4 @@
 
-
 const socket = io()
 
 const deleteProduct = () => {
@@ -17,10 +16,7 @@ const addProduct = async () => {
   form.reset()
 }
 
-const userr = {
-  name: "Joa",
-  cid: "64e6544d8c8614f8891a42ed"
-}
+let user
 
 const reset = () => {
   const formu = document.getElementById('formProduct');
@@ -28,7 +24,7 @@ const reset = () => {
 }
 
 const addProductToCart = (pid) => {
-  socket.emit('addToCart',userr.cid ,pid, 1)
+  socket.emit('addToCart',user.cartId ,pid, 1)
   const button = document.getElementById('addButton')
   button.remove()
   const div = document.getElementById('div-body')
@@ -61,6 +57,10 @@ const limit = 10
 const page = 1
 
 
+socket.on('getUser', (data) => {
+  user = data
+})
+
 const findSelected = () => {
   let select = document.querySelector("input[name='inlineRadioOptions']:checked")
   sort = select.value
@@ -79,3 +79,4 @@ if (buttonA) {
 radioBtn.forEach(radioBtn => {
   radioBtn.addEventListener('change', findSelected)
 })
+

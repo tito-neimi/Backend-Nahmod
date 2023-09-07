@@ -13,7 +13,7 @@ const { generateToken } = require('../../utils/generateToken');
 homeRouter.get('/', async (req, res) => {
   const _user =  await req.user
   let token
-  if (req.user) {token = generateToken({_user}); res.cookie('token', token, {httpOnly: true});}
+  if (req.user) {token = generateToken({_user}); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24, signed: true});}
   
   res.render('inicio',
   {
@@ -25,82 +25,7 @@ homeRouter.get('/', async (req, res) => {
 })
 
 
-const login = async (req, res) => {
-  const {email, password} = req.body
-  //res.cookie('user', username, { maxAge:604800000 })
-  try {
-    const _user = await userManager.getByEmail(email)
-    if (!_user) {
-      res.render('login', {error: "user not found"})
-      return
-    }
 
-    
-    if (!password) {
-      res.render('login', {error: "password is required"})
-      return
-    }
-    if (!isValidPassword(password, _user.password)){
-      res.render('login', {error: "Invalid password"})
-      return
-    }
-    const {password: _password, ...user} = _user
-
-    req.session.user = {
-      name: user.username,
-      id: user._id,
-      ...user
-    }
-    console.log(req.session.user)
-    res.redirect('/')
-  } catch (error) {
-    console.log(error)
-    res.render('login', {error: "An error occurred, please try again later."})
-  }
-}
-const sigunp = async (req, res) => { 
-  const user = req.body
-
-  const existing = await userManager.getByUser(user.username)
-  
-  if (existing){
-    res.render('signup', {error: "The user already exist"})
-    return
-  }
-
-  if (user.password !== user.password2){
-    res.render('signup', {error: "Passwords do not match "})
-    return
-  }
-
-  try {
-    const result =  await userManager.addUser({
-      ...user,
-      password: hashPassword(user.password)
-    })
-    req.session.user = {
-      name: result.username,
-      id: result._id,
-      ...result._doc
-    }
-    res.redirect('/')
-    console.log(result)
-  } catch (error) {
-    console.error(error)
-  }
-}
-const logout = (req, res) => {
-  // const {user} = req.cookies
-  // res.clearCookie('user')
-  req.session.destroy((err) => {
-    if (err) {
-      console.error(err)
-    }
-  })
-
-  res.render('logout', {user: req.user.name})
-  req.user = null
-}
 const resetPassword = async (req, res) => {
   const {email, password, password2} = req.body
 
@@ -144,15 +69,7 @@ const githubLogin = async (req, res) => {
 homeRouter.get('/login', (_, res) => {
   res.render('login')
 })
-// homeRouter.post('/login', (req, res, next) => {
-//   passport.authenticate('local-login', (error, user, info) => {
-//     if (error) {
-//       return res.render('login', { error: error });
-//     } else {
-//       return res.redirect('/');
-//     }
-//   })(req, res, next);
-// });
+
 homeRouter.post('/login', passport.authenticate('local-login', 
 {
     successRedirect: '/',
@@ -160,11 +77,6 @@ homeRouter.post('/login', passport.authenticate('local-login',
 })
 );
 
-// homeRouter.post('/login' , passport.authenticate('local-login', {
-//   successRedirect :'/',
-//   failureRedirect: '/login',
-
-// }))
 
 //Rutas GitHub
 
@@ -173,7 +85,8 @@ homeRouter.get('/githubSessions', passport.authenticate('github'), githubLogin)
 
 
 homeRouter.get('/logout', isAuth, async (req, res) => {
-  const {username} = await req.user
+  const {username} = req.user
+  res.clearCookie('token')
   req.logOut((error) => { 
     if (!error) {
       res.render('logout', {user: username})

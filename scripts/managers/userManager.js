@@ -1,7 +1,13 @@
 const userModel = require('../../models/user.model')
+const CartManager = require('./cartManager')
+const cartManager = new CartManager()
 
 class userManager{
   async addUser(user){
+    if (!user.cartId) {
+      user.cartId =  await cartManager.newCart()
+    }
+    console.log(user)
     return await userModel.create(user)
   }
   async updateUser(user){

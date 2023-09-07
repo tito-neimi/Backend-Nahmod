@@ -52,6 +52,7 @@ class CartRouter extends CustomRouter {
 
     this.get('/:cartId/products', ['customer', 'admin'], async (req, res) => {
       try {
+        console.log("buscando cart")
         const { cid } = req.params
       const cart = await cartPopulate(cid)
       const totalPrice = getTotalPrice(cart)

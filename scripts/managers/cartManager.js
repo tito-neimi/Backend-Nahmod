@@ -6,7 +6,7 @@ class cartManager {
   }
 
   async newCart (body) {
-    const cart = await cartModel.create({user: body.user, products: body ? body.products : null})
+    const cart = await cartModel.create({products: body ? body.products : []})
     console.log('carrito agregado')
     this.carts.push(cart)
     return cart._id

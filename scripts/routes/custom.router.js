@@ -69,9 +69,8 @@ class CustomRouter  {
             if(policies[0] === "public") {
                 return next()
             }
-
             const { authorization } =  req.headers 
-
+            
             if (!authorization) {
                 return res.status(401).send({
                     error: "Not a valid user"
