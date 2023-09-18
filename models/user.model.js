@@ -1,6 +1,5 @@
 const { Schema, model } = require('mongoose')
-const cartManager = require('../scripts/managers/cartManager')
-const CartManager = new cartManager()
+
 
 
 const schema  = new Schema({

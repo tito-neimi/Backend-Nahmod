@@ -1,15 +1,23 @@
 const jsonwebtoken = require('jsonwebtoken');
 const { JWT_SECRET, JWT_PAYLOAD } = require('../config/config.jwt');
 
+const options = {
+  algorithm: 'HS256',
+  expiresIn: '59m',
+}
+
 const generateToken = (user) => {
-  const result = jsonwebtoken.sign( {user} ,JWT_SECRET, JWT_PAYLOAD )
+  const result = jsonwebtoken.sign(user ,JWT_SECRET, options)
+  console.log(result)
   return result
 }
 
-const authToken = (token) => {
+const authToken =  (token) => {
   try {
-    return jsonwebtoken.verify(token, JWT_SECRET, JWT_PAYLOAD)
+    const result = jsonwebtoken.verify(token, JWT_SECRET)
+    return(result)
   } catch (error) {
+    console.error(error)
     return false
   }
 }

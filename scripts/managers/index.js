@@ -13,7 +13,6 @@ class productManager {
 
   async getAll () {
     const products = productModel.find().lean()
-    this.productos = products
     return products;
   }
 

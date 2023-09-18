@@ -1,10 +1,11 @@
 const githubStrategy = require('passport-github2')
 const userManager = require('../scripts/managers/userManager')
+const config = require('../config/config.js')
 
 
 const gitHubAccesConfig = {
-  clientID: "Iv1.f89f15e6e8bbf18b",
-  clientSecret: "453752172b1c2914265feec5bdde0256d2362204",
+  clientID: config.GITHUB_CLIENT_ID,
+  clientSecret: config.GITHUB_CLIENT_SECRET,
   callbackURL: "http://localhost:8080/githubSessions"
 }
 

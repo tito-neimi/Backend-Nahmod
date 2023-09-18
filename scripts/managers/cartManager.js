@@ -59,6 +59,10 @@ class cartManager {
     let cart = await cartModel.findOne({_id: "64d001e65a9ce9d273c430f8"})
     console.log(cart)
   }
+
+  async getAllCarts(){
+    return await cartModel.find({}).lean()
+  }
   }
 
 

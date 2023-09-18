@@ -13,7 +13,7 @@ const { generateToken } = require('../../utils/generateToken');
 homeRouter.get('/', async (req, res) => {
   const _user =  await req.user
   let token
-  if (req.user) {token = generateToken({_user}); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24, signed: true});}
+  if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24, signed: true});}
   
   res.render('inicio',
   {

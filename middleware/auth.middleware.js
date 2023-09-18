@@ -7,8 +7,8 @@ function isAuth (req, res, next) {
 }
 
 function isAdmin (req, res, next) {
-  console.log(req.user)
-  if (req.user.role == "admin") {
+  console.log(req.session.user.role)
+  if (req.session.user == "admin") {
     next()
     return
   }

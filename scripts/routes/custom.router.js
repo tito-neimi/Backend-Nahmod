@@ -70,7 +70,6 @@ class CustomRouter  {
                 return next()
             }
             const { authorization } =  req.headers 
-            
             if (!authorization) {
                 return res.status(401).send({
                     error: "Not a valid user"
@@ -80,21 +79,18 @@ class CustomRouter  {
             const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
             const user = authToken(token) // consigue el usuario 
 
-            console.log(user)
-
-
             if (!user) {
                 return res.status(401).send({
                     error: "Not a valid user"
                 })
             }
-            if (!policies.includes(user.user._user.role)) {
+            if (!policies.includes(user.role)) {
                 return res.status(403).send({
                     success: false,
                     error: "Forbbiden"
                 })
             }
-
+            console.log("rol correcto")
             next()
         }
     }
