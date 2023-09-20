@@ -21,7 +21,11 @@ const { Server} = require('socket.io')
 const cookieParser = require('cookie-parser')
 const handlebars = require('express-handlebars')
 const homeRouter = require('./scripts/routes/homeRouter')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
+const mongoDbservice = require('./sevices/mongo.db.js')
+
+
+
 const bodyParser = require('body-parser');
 const session = require('express-session')
 const MongoStrore = require('connect-mongo')
@@ -52,6 +56,10 @@ app.use('/static', express.static(path.join(__dirname,'/public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
 
+  const mongoService = mongoDbservice.getInstance()
+  const connection = mongoService.connection
+
+
 app.use(session({
   secret: 'contraseña',
   resave: true,
@@ -62,16 +70,6 @@ app.use(session({
   })
 }))
 
-mongoose.set('strictQuery', true)
-mongoose.connect(config.MONGO_URL), (error) => {
-  if (error) {
-    console.log('coneccion fallida', error)
-    process.exit()
-  }
-  else {
-    console.log('base de datos conectada')
-  }
-}
 
 initPassportLocal()
 app.use(passport.initialize())
