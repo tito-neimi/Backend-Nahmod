@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": " nodemon ./scripts/index.js",
-    "start:express": "nodemon ./app"
+    "start": " nodemon ./app"
   },
   "author": "Joaquin Nahmod",
   "license": "ISC",
