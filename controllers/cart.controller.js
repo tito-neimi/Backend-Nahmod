@@ -1,6 +1,6 @@
 
-const cartManager = require('../scripts/managers/cartManager.js')
-const CartManager = new cartManager()
+const factoryManager = require('../scripts/repositories/factory.manager')
+const CartManager = factoryManager.getManagerInstance('cart')
 const cartPopulate = require('../scripts/cart.populate.js')
 
 

@@ -1,8 +1,10 @@
+const userManager = require('../scripts/repositories/user.repository');
 const { generateToken } = require('../utils/generateToken.js');
 
 
 const home = async (req, res) => {
   const _user =  await req.user
+  console.log(_user)
   let token
   if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24, signed: true});}
   
@@ -31,9 +33,8 @@ const resetPassword = async (req, res) => {
     res.render('resetPassword', {error: "Passwords do not match"})
     return
   }
-
   try {
-    userManager.updateUser({
+    userManager.modifyElement({
       ...user,
       password: hashPassword(password)
     })

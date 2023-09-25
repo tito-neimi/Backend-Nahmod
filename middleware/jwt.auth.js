@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const { JWT_SECRET, JWT_PAYLOAD } = require('../config/config.jwt');
+const dto = require('../models/dto/dto');
 
 const jwtVerifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization || req.cookies('token')
@@ -17,7 +18,7 @@ const jwtVerifyToken = (req, res, next) => {
 
   try {
     const credentials = jwt.verify(token, JWT_SECRET)
-    req.user = credentials
+    req.user = dto.setUser(credentials._id) 
     next()
   } catch (error) {
     console.error(error)

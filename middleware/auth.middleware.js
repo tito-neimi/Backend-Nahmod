@@ -1,5 +1,5 @@
 function isAuth (req, res, next) {
-  if (req.user) {
+  if (req.session.pasport) {
     next()
     return
   }
@@ -7,7 +7,6 @@ function isAuth (req, res, next) {
 }
 
 function isAdmin (req, res, next) {
-  console.log(req.session.user.role)
   if (req.session.user == "admin") {
     next()
     return

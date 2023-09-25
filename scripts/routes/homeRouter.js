@@ -1,11 +1,9 @@
 const { Router } = require('express');
-const {isAuth, isAdmin, } = require('../../middleware/auth.middleware');
-const {hashPassword, isValidPassword} = require('../../utils/password.utils')
+const {isAuth} = require('../../middleware/auth.middleware');
 const passport = require('passport')
 
 const homeRouter = Router()
 
-const userManager = require('../managers/userManager');
 const { log } = require('handlebars');
 const { home, resetPassword, logout } = require('../../controllers/home.controller');
 

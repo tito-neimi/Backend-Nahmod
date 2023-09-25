@@ -32,15 +32,13 @@ const MongoStrore = require('connect-mongo')
 const passport = require('passport')
 
 
-const ProductManager = require('./scripts/managers/index')
+const ProductManager = require('./scripts/repositories/product.repository')
 const productManager = new ProductManager()
-const chatMessageManager = require('./scripts/managers/chatManager')
-const cartManager = require('./scripts/managers/cartManager')
+const chatMessageManager = require('./scripts/repositories/chat.repository')
+const cartManager = require('./scripts/repositories/cart.repository')
 const CartManager = new cartManager()
 const initPassportLocal = require('./config/passport.init')
-const userManager = require('./scripts/managers/userManager')
-
-
+const dto = require('./models/dto/dto.js')
 
 const app = express();
 const server = http.createServer(app)
@@ -55,6 +53,7 @@ app.set('view engine', 'handlebars')
 app.use('/static', express.static(path.join(__dirname,'/public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
+
 
   const mongoService = mongoDbservice.getInstance()
   const connection = mongoService.connection
@@ -77,11 +76,11 @@ app.use(passport.session())
 let _user
 app.use( async (req, res, next) => {
   if (req.session.passport) {
-    _user = await userManager.getById(req.session.passport.user)
- }
+    _user = await dto.setUser(req.session.passport.user)
+}
  else{
   _user = null
- }
+}
   next()
 
 

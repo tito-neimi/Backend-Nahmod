@@ -2,7 +2,7 @@ const { Router } = require('express')
 const router = Router()
 const express = require('express')
 
-const CustomRouter = require('../custom.router')
+const CustomRouter = require('../custom.router.api')
 const { setCart, getAllCarts, getCartById, modifyCartQuantity, deleteCartProduct, modifyCart, addProductToCart } = require('../../../controllers/cart.controller')
 
 router.use(express.json())

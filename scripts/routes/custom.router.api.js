@@ -1,11 +1,12 @@
 const { Router } = require('express')
-const dto = require('../../models/dto/dto.js')
+const {authToken} = require('../../utils/generateToken')
 
 
 class CustomRouter  {
     constructor() {
         this.router = Router()
         this.init()
+        this.counter = 0
     }
 
     init() {
@@ -16,7 +17,7 @@ class CustomRouter  {
         return this.router
     }
 
-    async get(path, policies, ...callbacks) {
+    get(path, policies, ...callbacks) {
         this.router.get(path, this.handlePolicies(policies), this.generateCustomResponses, this.applyCallbacks(callbacks))
     }
 
@@ -64,22 +65,25 @@ class CustomRouter  {
     // 3 tipos de usuario: PUBLIC, CUSTOMER, ADMIN
 
     handlePolicies(policies) {
-      return async (req, res, next) => {
-        if(policies[0] === "public") {
-          return next()
-        }
-        let user
-        if(req.session.passport){ 
-          user = await dto.setUser(req.session.passport.user) 
-        }
-        else { user = null}
-          console.log(user)
-            if (!user) {
+        return (req, res, next) => {
+            if(policies[0] === "public") {
+                return next()
+            }
+            const { authorization } =  req.headers 
+            if (!authorization) {
                 return res.status(401).send({
-                    error: "Not logged in"
+                    error: "Not a valid user"
                 })
             }
 
+            const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
+            const user = authToken(token) // consigue el usuario 
+
+            if (!user) {
+                return res.status(401).send({
+                    error: "Not a valid user"
+                })
+            }
             if (!policies.includes(user.role)) {
                 return res.status(403).send({
                     success: false,

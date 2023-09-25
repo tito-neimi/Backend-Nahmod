@@ -1,14 +1,18 @@
-const { Router } = require('express')
-const router = Router()
 
-const {isAuth} = require('../../../middleware/auth.middleware')
-const userManager = require('../../managers/userManager')
+const dto = require('../../../models/dto/dto')
+const CustomRouter = require('../custom.router')
 
-router.get(('/'), isAuth, async (req, res) => {
-  const _user = await userManager.getById(req.session.passport.user)
-  res.render('chat', {user:_user} )
-})
+class chatRouter extends CustomRouter {
+  init () {
 
+    this.get('/', ["customer","admin"],  async (req, res) => {
+      const _user = dto.setUser(req.session.passport.user)
+      res.render('chat', {user:_user} )
+    })
+  }
 
+}
+module.exports = {
+  custom: new chatRouter()
+}
 
-module.exports = router;

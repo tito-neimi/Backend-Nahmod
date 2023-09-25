@@ -1,14 +1,13 @@
-const passport = require('passport')
 const local = require('passport-local')
-
-const userManager = require('../scripts/managers/userManager')
+const factoryManager = require('../scripts/repositories/factory.manager')
+const userManager = factoryManager.getManagerInstance('user')
 const {hashPassword, isValidPassword} = require('../utils/password.utils')
-
+const Dto = require('../models/dto/dto.js')
 
 const LocalStrategy = local.Strategy
 
 const signup = async (req, email, password, done) => {
-  const {password: _password, password2: _password2, ...user } = req.body
+  const {password: _password, password2: _password2, firstName: _firstName, lastName:_lastName, ...user } = req.body
 
   const _user = await userManager.getByEmail(email)
 
@@ -19,7 +18,8 @@ const signup = async (req, email, password, done) => {
   try {
     const newUser = await userManager.addUser({
       ...user,
-      password: hashPassword(password)
+      password: hashPassword(password),
+      fullName: Dto.getFullame(_firstName, _lastName)
     })
     console.log(newUser)
     return done(null, newUser)

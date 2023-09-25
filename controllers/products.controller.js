@@ -1,13 +1,12 @@
-const ProductManager = require('../scripts/managers/index.js')
-const productManager = new ProductManager()
-const userManager = require('../scripts/managers/userManager.js')
-
+const factoryManager = require('../scripts/repositories/factory.manager')
+const dto = require('../models/dto/dto.js')
+const productManager = factoryManager.getManagerInstance('products')
 
 const getAll =  async (req, res) => {
   let { limit, page, sort, query } = req.query
   var _user
   if (req.session.passport){
-    _user = await userManager.getById(req.session.passport.user)
+    _user = await dto.setUser(req.session.passport.user)
   }
   else{ _user = null}
 
@@ -30,7 +29,7 @@ const getAll =  async (req, res) => {
   const getById = async (req, res) => {
 
     const { id } = req.params
-    const product = await productManager.getProductById(id)
+    const product = await productManager.getElementById(id)
     const item = product[0]
     if (!product){
       res.sendStatus(404)
@@ -38,7 +37,7 @@ const getAll =  async (req, res) => {
     }
     var _user
     if (req.session.passport){
-    _user = await userManager.getById(req.session.passport.user)
+    _user = dto.setUser(req.session.passport.user)
   }
   else{ _user = null}
     res.render ('displayProduct', {item:item, user: _user ?  {..._user, isAdmin: _user?.role == 'admin',} : null})
@@ -91,7 +90,11 @@ const getAll =  async (req, res) => {
 
   const realTimeProduct = async (req, res) => {
     const products = await productManager.getAll()
-    res.render ('realTimeProducts', {productos: products, admin: true, user: req.session.user})
+    if (req.session.passport){
+      _user = await dto.setUser(req.session.passport.user)
+    }
+    else _user = null
+    res.render ('realTimeProducts', {productos: products, admin: true, user: _user})
   }
 
 module.exports = {

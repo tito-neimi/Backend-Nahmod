@@ -1,5 +1,5 @@
 const githubStrategy = require('passport-github2')
-const userManager = require('../scripts/managers/userManager')
+const userManager = require('../scripts/repositories/user.repository')
 const config = require('../config/config.js')
 
 

@@ -1,8 +1,7 @@
 const { signup, login,loginn, LocalStrategy } = require("./passport.local.config")
 
 const passport = require('passport')
-const userManager = require('../scripts/managers/userManager')
-const jwt = require('./passport.jwt.config')
+const userManager = require('../scripts/repositories/user.repository')
 
 const {githubStrategy, gitHubAccesConfig, profileGithubController, strategyName} = require('./passport.github')
 
@@ -21,7 +20,7 @@ const init = () => {
   });
   
   passport.deserializeUser(async (user, done) => {
-    const _user = await userManager.getById(user)
+    const _user = await userManager.getElementById(user)
     done(null, _user)
   })
   // passport.use('jwt', jwt )

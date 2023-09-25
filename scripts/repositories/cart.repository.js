@@ -8,7 +8,6 @@ class cartManager {
   async newCart (body) {
     const cart = await cartModel.create({products: body ? body.products : []})
     console.log('carrito agregado')
-    this.carts.push(cart)
     return cart._id
   }
 
@@ -20,7 +19,7 @@ class cartManager {
   async addProductToCart (cid,item) {
     console.log(item.quantity)
 
-     const result = await cartModel.findOneAndUpdate(
+    const result = await cartModel.findOneAndUpdate(
     { _id: cid },
     { $push: { products: {_id: item._id, quantity: item.quantity} } },
     { new: true }
@@ -53,11 +52,6 @@ class cartManager {
     //Yo al mandar el objeto por el postaman lo mando como array ([1]) ya que no me deja mandarlo solo
     const result = await cartModel.updateOne({_id: cid, "products.pid": pid}, {$set:{"products.$.quantity": body[0]}}) 
     return result
-  }
- 
-  async getAll() {
-    let cart = await cartModel.findOne({_id: "64d001e65a9ce9d273c430f8"})
-    console.log(cart)
   }
 
   async getAllCarts(){
