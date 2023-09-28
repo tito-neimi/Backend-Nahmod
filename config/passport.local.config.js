@@ -7,7 +7,7 @@ const Dto = require('../models/dto/dto.js')
 const LocalStrategy = local.Strategy
 
 const signup = async (req, email, password, done) => {
-  const {password: _password, password2: _password2, firstName: _firstName, lastName:_lastName, ...user } = req.body
+  const {password: _password, password2: _password2, ...user } = req.body
 
   const _user = await userManager.getByEmail(email)
 
@@ -19,7 +19,6 @@ const signup = async (req, email, password, done) => {
     const newUser = await userManager.addUser({
       ...user,
       password: hashPassword(password),
-      fullName: Dto.getFullame(_firstName, _lastName)
     })
     console.log(newUser)
     return done(null, newUser)

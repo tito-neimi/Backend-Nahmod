@@ -10,7 +10,6 @@ const {githubStrategy, gitHubAccesConfig, profileGithubController, strategyName}
 const init = () => {
   passport.use('local-signup', new LocalStrategy({usernameField: 'email', passReqToCallback: true},signup))
   passport.use('local-login', new LocalStrategy({usernameField: 'email'}, loginn))
-  // passport.use('local-login', new LocalStrategy({usernameField: 'email'}, login))
   passport.use(strategyName, new githubStrategy(gitHubAccesConfig, profileGithubController)) //strategyname = "github"
 
   

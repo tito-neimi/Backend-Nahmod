@@ -1,12 +1,15 @@
+const dto = require('../models/dto/dto');
 const userManager = require('../scripts/repositories/user.repository');
 const { generateToken } = require('../utils/generateToken.js');
 
 
 const home = async (req, res) => {
-  const _user =  await req.user
-  console.log(_user)
+  let _user
+  if (req.session.passport)  _user =  await dto.setUser(req.session.passport.user)
+  else _user = null
+
   let token
-  if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24, signed: true});}
+  if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24,});}
   
   res.render('inicio',
   {

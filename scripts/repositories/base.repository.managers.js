@@ -29,9 +29,11 @@ async delete (id) {
     return entitie
   }
 
+
   async modifyElement (id, item) {
     try {
       const result = await this.model.updateOne({_id : id}, item)
+      console.log("resultado: ", result)
       if (result.matchedCount >= 1) return item
     }
     catch(e){

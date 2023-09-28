@@ -4,7 +4,8 @@ const { Schema, model } = require('mongoose')
 
 const schema  = new Schema({
   cartId: String, 
-  fullName: String,
+  fisrtName: String,
+  lastName: String, 
   email: String,
   username: String,
   password: String,

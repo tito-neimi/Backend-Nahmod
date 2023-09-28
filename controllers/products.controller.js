@@ -30,14 +30,15 @@ const getAll =  async (req, res) => {
 
     const { id } = req.params
     const product = await productManager.getElementById(id)
-    const item = product[0]
+    const item = product
     if (!product){
       res.sendStatus(404)
       return
     }
     var _user
     if (req.session.passport){
-    _user = dto.setUser(req.session.passport.user)
+    _user = await dto.setUser(req.session.passport.user)
+    console.log(_user)
   }
   else{ _user = null}
     res.render ('displayProduct', {item:item, user: _user ?  {..._user, isAdmin: _user?.role == 'admin',} : null})

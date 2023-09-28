@@ -6,7 +6,7 @@ class productRouter extends CustomRouter {
   init () {
 
     this.get('/', ["public","customer","admin"], getAll)
-    this.get('/id/', ['public','customer', 'admin'], getById)
+    this.get('/:id/', ['public','customer', 'admin'], getById)
     this.post('/',['admin'], createProduct)
     this.put('/:pid', ['admin'], modifyProduct)
     this.delete('/:pid', ['admin'], deleteProduct)

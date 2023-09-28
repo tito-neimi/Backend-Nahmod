@@ -70,14 +70,21 @@ class CustomRouter  {
                 return next()
             }
             const { authorization } =  req.headers 
-            if (!authorization) {
+            const cookieToken = req.cookies['token']
+            if (!authorization && !cookieToken) {
                 return res.status(401).send({
                     error: "Not a valid user"
                 })
             }
-
-            const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
-            const user = authToken(token) // consigue el usuario 
+            let user
+            if (!cookieToken){
+                console.log('auth')
+                const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
+                user = authToken(token) // consigue el usuario 
+            }
+            else {
+                user = authToken(cookieToken) // consigue el usuario 
+            }
 
             if (!user) {
                 return res.status(401).send({

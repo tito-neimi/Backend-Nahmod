@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-center align-items-center w-100 mt-5 flex-column">
-  <h2>Cart of {{cart.user.firstName}} {{cart.user.lastName}}</h2>
+  <h2>Cart of {{user.firstName}} {{user.lastName}}</h2>
   <div>
     <table class="table">
       <thead>
@@ -21,4 +21,9 @@
     </table>
     <p>Total Price: {{totalPrice}}</p>
   </div>
+  {{#if cart.products}}
+    <a href="./purchase" class="btn btn-primary">Purchase</a>
+  {{else}}
+    <a href="/api/products" class="btn btn-primary">See some products</a>
+  {{/if}}
 </div>

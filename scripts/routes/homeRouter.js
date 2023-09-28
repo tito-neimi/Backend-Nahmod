@@ -6,6 +6,7 @@ const homeRouter = Router()
 
 const { log } = require('handlebars');
 const { home, resetPassword, logout } = require('../../controllers/home.controller');
+const dto = require('../../models/dto/dto');
 
 
 homeRouter.get('/', home)
@@ -53,8 +54,9 @@ homeRouter.post('/signup', passport.authenticate('local-signup',{
   failureRedirect: '/signup'
 }))
 
-homeRouter.get('/profile', isAuth, async (req, res) => {
-  res.render('profile', {user: req.user})
+homeRouter.get('/profile', isAuth , async (req, res) => {
+  _user = await dto.setUser(req.session.passport.user)
+  res.render('profile', {user: _user})
 })
 
 homeRouter.get('/resetPassword', (req, res) => {

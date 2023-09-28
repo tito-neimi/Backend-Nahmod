@@ -3,7 +3,7 @@ const router = Router()
 const express = require('express')
 
 const CustomRouter = require('../custom.router.api')
-const { setCart, getAllCarts, getCartById, modifyCartQuantity, deleteCartProduct, modifyCart, addProductToCart } = require('../../../controllers/cart.controller')
+const { setCart, getAllCarts, getCartById, modifyCartQuantity, deleteCartProduct, modifyCart, addProductToCart, purchase } = require('../../../controllers/cart.controller')
 
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
@@ -14,10 +14,10 @@ class CartRouter extends CustomRouter {
 
     this.get('/', ["admin"], getAllCarts)
 
-    this.get('/:cartId/products', ['customer', 'admin'], getCartById)
+    this.get('/:cid/products', ['customer', 'admin'], getCartById)
 
     //To do: poner verificaciones para el producto y el carrito
-    this.put('/:cartId/products/productId', ['customer', 'admin'], modifyCartQuantity)
+    this.put('/:cid/products/productId', ['customer', 'admin'], modifyCartQuantity)
       //to do: poner verificaciones tanto en el cid como en el pid
     this.delete('/:cid/product/:pid', ['customer', 'admin'], deleteCartProduct)
 
@@ -25,6 +25,7 @@ class CartRouter extends CustomRouter {
 
     this.post('/:cid/product/:pid',['admin'], addProductToCart)
 
+    this.get('/:cid/purchase', ['customer', 'admin'], purchase)
   }
 
 }
