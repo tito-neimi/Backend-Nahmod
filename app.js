@@ -39,6 +39,7 @@ const cartManager = require('./scripts/repositories/cart.repository')
 const CartManager = new cartManager()
 const initPassportLocal = require('./config/passport.init')
 const dto = require('./models/dto/dto.js')
+const handleError = require('./middleware/errors/index.js')
 
 const app = express();
 const server = http.createServer(app)
@@ -89,6 +90,8 @@ app.use( async (req, res, next) => {
 //Routes
 app.use('/', homeRouter)
 app.use('/api', routes)
+
+app.use(handleError)
 
 io.on('connection', async (socket) => {
   console.log(`Se ha conectado el usuario ${socket.id}`)

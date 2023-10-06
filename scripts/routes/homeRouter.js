@@ -7,6 +7,7 @@ const homeRouter = Router()
 const { log } = require('handlebars');
 const { home, resetPassword, logout } = require('../../controllers/home.controller');
 const dto = require('../../models/dto/dto');
+const { productTest } = require('../../tests/products.test');
 
 
 homeRouter.get('/', home)
@@ -49,6 +50,12 @@ homeRouter.get('/logout', isAuth, logout)
 homeRouter.get('/signup', (_, res) => {
   res.render('signup')
 })
+
+homeRouter.get('/mockingproducts', async  (req, res) => {
+  const response = await productTest()
+  res.send(JSON.stringify(response))
+})
+
 homeRouter.post('/signup', passport.authenticate('local-signup',{
   successRedirect: '/',
   failureRedirect: '/signup'

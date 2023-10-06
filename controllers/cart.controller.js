@@ -9,12 +9,20 @@ const ProductManager = new productManager()
 const dto = require('../models/dto/dto')
 const mailSenderService = require('../sevices/mail.sender.service')
 const { generateUUID } = require('../utils/generateUUID')
+const customError = require('../errors/custom.error')
+const errorType = require('../errors/errorTypes')
 
 const setCart = async (req, res, next, cartId) => {
   try {
     const cart = await CartManager.getCartById(cartId)
 
     if (!cart){
+      customError.createError({
+        name: "Product not found",
+        cause: "ID not found",
+        msg: errorMesage.notFound(cartId),
+        code: errorType.INVALID_TYPES
+      })
       return res.status(404).send({
         succes: false,
         error: 'Cart not found'
@@ -48,6 +56,12 @@ const getCartById = async (req, res) => {
   const totalPrice = getTotalPrice(cart)
   res.render ('singleCart', {cart: cart, totalPrice: totalPrice })
   } catch (error) {
+    customError.createError({
+      name: "Product not found",
+      cause: "ID not found",
+      msg: errorMesage.notFound(cid),
+      code: errorType.INVALID_TYPES
+    })
     res.status(404).send("Error 404 Cart Not found")
   }
 }
@@ -60,6 +74,12 @@ const purchase = async (req, res) => {
     const purchaseCart = []
     let amount = 0
     if (!cart) {
+      customError.createError({
+        name: "Product not found",
+        cause: "ID not found",
+        msg: errorMesage.notFound(cid),
+        code: errorType.INVALID_TYPES
+      })
       res.status(404).send({
         error: "cart not found"
       })
