@@ -1,5 +1,6 @@
 const { Router } = require('express')
 const dto = require('../../models/dto/dto.js')
+const logger = require('../../logger/index.js')
 
 
 class CustomRouter  {
@@ -36,7 +37,7 @@ class CustomRouter  {
             try {
                 await cb.apply(this, params)
             } catch (e) {
-                console.log(e)
+                logger.error(e)
             }
         })
     }
@@ -73,7 +74,6 @@ class CustomRouter  {
           user = await dto.setUser(req.session.passport.user) 
         }
         else { user = null}
-          console.log(user)
             if (!user) {
                 return res.status(401).send({
                     error: "Not logged in"
@@ -86,7 +86,7 @@ class CustomRouter  {
                     error: "Forbbiden"
                 })
             }
-            console.log("rol correcto")
+            logger.debug("rol correcto")
             next()
         }
     }

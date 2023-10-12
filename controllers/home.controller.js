@@ -1,3 +1,4 @@
+const logger = require('../logger');
 const dto = require('../models/dto/dto');
 const userManager = require('../scripts/repositories/user.repository');
 const { generateToken } = require('../utils/generateToken.js');
@@ -43,7 +44,7 @@ const resetPassword = async (req, res) => {
     })
     res.redirect('/login')
   } catch (e) {
-    console.log(e)
+    logger.error(e)
     res.render('resetPassword', {error: "An erros has ocurred"})
   }
 }

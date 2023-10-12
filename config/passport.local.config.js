@@ -3,6 +3,7 @@ const factoryManager = require('../scripts/repositories/factory.manager')
 const userManager = factoryManager.getManagerInstance('user')
 const {hashPassword, isValidPassword} = require('../utils/password.utils')
 const Dto = require('../models/dto/dto.js')
+const logger = require('../logger')
 
 const LocalStrategy = local.Strategy
 
@@ -23,7 +24,7 @@ const signup = async (req, email, password, done) => {
     console.log(newUser)
     return done(null, newUser)
   } catch (error) {
-    console.log(error)
+    logger.error(error)
     done(error, false)
   }
   
@@ -67,7 +68,7 @@ const login = async ( email, password, done) => {
     const {password: _password, ...user} = _user
     return done(null, user)
   } catch (error) {
-    console.log(error)
+    logger.error(error)
     return done(error, false)
   }
 }

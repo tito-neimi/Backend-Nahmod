@@ -2,6 +2,8 @@ const { Router } = require('express');
 const {isAuth} = require('../../middleware/auth.middleware');
 const passport = require('passport')
 
+const loggerTest = require('../../tests/logger.test.js')
+
 const homeRouter = Router()
 
 const { log } = require('handlebars');
@@ -54,6 +56,21 @@ homeRouter.get('/signup', (_, res) => {
 homeRouter.get('/mockingproducts', async  (req, res) => {
   const response = await productTest()
   res.send(JSON.stringify(response))
+})
+
+homeRouter.get('/loggerTest', (req, res) => {
+  if(loggerTest()){
+    res.send({
+      message: "Logger probado en el server",
+      status: "true"
+    }).status(202)
+  }
+  else{
+    res.send({
+      message: "Error al ejecutar los loggs",
+      status: "false"
+    }).status(500)
+  }
 })
 
 homeRouter.post('/signup', passport.authenticate('local-signup',{

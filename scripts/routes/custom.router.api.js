@@ -1,5 +1,6 @@
 const { Router } = require('express')
 const {authToken} = require('../../utils/generateToken')
+const logger = require('../../logger')
 
 
 class CustomRouter  {
@@ -37,7 +38,7 @@ class CustomRouter  {
             try {
                 await cb.apply(this, params)
             } catch (e) {
-                console.log(e)
+                logger.error(e)
             }
         })
     }
@@ -78,7 +79,6 @@ class CustomRouter  {
             }
             let user
             if (!cookieToken){
-                console.log('auth')
                 const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
                 user = authToken(token) // consigue el usuario 
             }
@@ -97,7 +97,7 @@ class CustomRouter  {
                     error: "Forbbiden"
                 })
             }
-            console.log("rol correcto")
+            logger.debug("rol correcto")
             next()
         }
     }

@@ -1,3 +1,4 @@
+const logger = require('../../logger')
 const cartModel = require('../../models/cart.model')
 
 class cartManager {
@@ -24,7 +25,7 @@ class cartManager {
     { $push: { products: {_id: item._id, quantity: item.quantity} } },
     { new: true }
     );
-    console.log(result)
+    logger.info("producto agregado al carrito, nuevo carriot :", result)
     }
 
   async deleteProductFromCart (cid, pid) {
@@ -33,12 +34,10 @@ class cartManager {
       const itemRef = cart[0].products.filter(prod => prod !== pid)
       cart[0].products = itemRef
       const result = await cartModel.updateOne({_id: cid}, {$set: {products: cart[0].products}})
-      console.log(result)
       return result
     }
     else {
       const result = await cartModel.updateOne({_id:cid}, {$set: {products: []}})
-      console.log(result)
       return result
     }
   }

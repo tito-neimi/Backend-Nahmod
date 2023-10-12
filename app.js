@@ -3,7 +3,7 @@ const {Command} = require('commander')
 const program = new Command()
 const path = require('path')
 
-//Para ejecutar el modo developent se inicia asi: npm run start:express -- --env development
+//Para ejecutar el modo developent se inicia asi: npm run start -- --env development
 program.option('-e, --env <env>','Entorno de desarrollo', 'production')
 program.parse()
 const {env} = program.opts()
@@ -48,16 +48,21 @@ const io = new Server(server)
 const config = require('./config/config.js')
 const port = config.PORT
 
+const logger = require('./logger/index.js')
+const loggerMiddleware = require('./middleware/logger.middleware.js')
+
+
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
+app.use(loggerMiddleware)
 app.use('/static', express.static(path.join(__dirname,'/public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
 
 
-  const mongoService = mongoDbservice.getInstance()
-  const connection = mongoService.connection
+  // const mongoService = mongoDbservice.getInstance()
+  // const connection = mongoService.connection
 
 
 app.use(session({
@@ -82,10 +87,12 @@ app.use( async (req, res, next) => {
  else{
   _user = null
 }
+
   next()
 
 
 })
+logger.error('error en la app')
 
 //Routes
 app.use('/', homeRouter)
@@ -94,10 +101,11 @@ app.use('/api', routes)
 app.use(handleError)
 
 io.on('connection', async (socket) => {
-  console.log(`Se ha conectado el usuario ${socket.id}`)
+  logger.info(`Se ha conectado el usuario ${socket.id}`)
   productManager.getAll()
 
   const messages = await chatMessageManager.getAll()
+  
   
   socket.on('deleteProduct', async (id) => {
     await productManager.deleteProduct(id)
@@ -126,13 +134,13 @@ io.on('connection', async (socket) => {
   
 
   socket.on('disconnect', () => {
-    console.log('usuario desconectado')
+    logger.info('usuario desconectado')
   })
 })
 
 
 server.listen(port, () => {
-  console.log(`La app se esta ejecutando en el puerto ${port}`)
+  logger.info(`La app se esta ejecutando en el puerto ${port}`)
 })
 
 

@@ -7,6 +7,6 @@ module.exports = {
   MAIL: {
     GMAIL_ADRESS: process.env.GMAIL_ADRESS,
     GMAIL_PASSWORD: process.env.GMAIL_PASSWORD
-  }
-
+  },
+  LOGGER: process.env.LOGGER
 }

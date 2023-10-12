@@ -8,7 +8,6 @@ const options = {
 
 const generateToken = (user) => {
   const result = jsonwebtoken.sign(user ,JWT_SECRET, options)
-  console.log(result)
   return result
 }
 

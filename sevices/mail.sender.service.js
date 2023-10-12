@@ -25,7 +25,6 @@ class MailSender {
       to: to,
       html: body
     })
-    console.log(response)
   }
 }
 

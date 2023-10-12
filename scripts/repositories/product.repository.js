@@ -36,43 +36,6 @@ class productManager  extends BaseMananger{
     return products
     
   }
-
-  // async addProduct(item) {
-  //     const result = await productModel.create(item)
-  //     this.Update()
-  //     return result;
-  // }
-
-  // async deleteProduct (id) {
-  //   if (await !this.getProductById(id)) {
-  //     console.error("el producto no existe")
-  //     return false
-  //   }
-  //   else {
-  //     await productModel.deleteOne({_id : id})
-  //     console.log("producto eliminado")
-  //     return true
-  //     this.Update()
-  //   }
-  //}
-
-  // async getProductById(id) {
-  //   const product = await productModel.find({_id : id}).lean()
-  //   console.log("producto", product)
-  //   return product
-  // }
-
-  // async modifyProduct (id, item) {
-  //   try {
-  //     const result = await productModel.updateOne({_id : id}, item)
-  //     if (result.matchedCount >= 1) {return item}
-  //     this.Update()
-  //   }
-  //   catch(e){
-  //     console.error(e)
-  //     return false;
-  //   }
-  // }
 }
 
 

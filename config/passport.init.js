@@ -4,6 +4,7 @@ const passport = require('passport')
 const userManager = require('../scripts/repositories/user.repository')
 
 const {githubStrategy, gitHubAccesConfig, profileGithubController, strategyName} = require('./passport.github')
+const logger = require("../logger")
 
 
 
@@ -14,7 +15,7 @@ const init = () => {
 
   
   passport.serializeUser((user, done) => {
-    console.log('usuario guardado')
+    logger.debug('usuario guardado')
     done(null, user._id);
   });
   

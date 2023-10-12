@@ -1,3 +1,4 @@
+const logger = require('../../logger')
 const userModel = require('../../models/user.model')
 const BaseMananger = require('./base.repository.managers')
 const CartManager = require('./cart.repository')
@@ -14,7 +15,7 @@ class userManager extends BaseMananger{
     if (!user.cartId) {
       user.cartId =  await cartManager.newCart()
     }
-    console.log(user)
+    logger.info("nuevo usuario: ", user)
     return await userModel.create(user)
   }
   async getByEmail (email) {
@@ -24,19 +25,6 @@ class userManager extends BaseMananger{
     const result = await userModel.find({email: email, password: password})
     return result
   }
-  // async updateUser(user){
-  //   return await userModel.updateOne(user)
-  // }
-  // async getAll(){
-  //   return await userModel.find({}).lean()
-  // }
-
-  // async getById(id){
-  //   return await userModel.findOne({_id : id}).lean()
-  // }
-  // async deleteUser(id){
-  //   await userModel.deleteOne({_id:id})
-  // }
 }
 
 module.exports = new userManager()

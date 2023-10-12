@@ -1,7 +1,7 @@
 const githubStrategy = require('passport-github2')
 const userManager = require('../scripts/repositories/user.repository')
 const config = require('../config/config.js')
-
+const logger = require('../logger/index')
 
 const gitHubAccesConfig = {
   clientID: config.GITHUB_CLIENT_ID,
@@ -19,7 +19,7 @@ const gitHubUser = async (profile, done) => {
   const _user = await userManager.getByEmail(email)
 
   if (!_user) {
-    console.log("usuario no encontrado")
+    logger.warn("usuario no encontrado, Intento de inicio de sesion con github")
     const newUser = {
       firstName: name.split(" ")[0],
       lastName: name.split(" ")[1],
@@ -34,7 +34,6 @@ const gitHubUser = async (profile, done) => {
   }
   _user.id = _user._id
 
-  console.log("el usuario existe")
   return done(null, _user)
 }
 const profileGithubController = async (accessToken, refreshToken, profile, done) => {

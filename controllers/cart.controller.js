@@ -11,6 +11,7 @@ const mailSenderService = require('../sevices/mail.sender.service')
 const { generateUUID } = require('../utils/generateUUID')
 const customError = require('../errors/custom.error')
 const errorType = require('../errors/errorTypes')
+const logger = require('../logger')
 
 const setCart = async (req, res, next, cartId) => {
   try {
@@ -89,7 +90,7 @@ const purchase = async (req, res) => {
         const newStock = product._id.stock - product.quantity
         amount += product.quantity * product._id.price
         ProductManager.modifyElement(product._id, {stock: newStock}, {nes:true}, (err, doc) => {
-          if (err) console.log(err)
+          if (err) logger.error(err)
           else console.log(doc)
       })
       const obj = {_id: product._id._id, quantity: product.quantity, price: product._id.price, title: product._id.title}
