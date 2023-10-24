@@ -1,6 +1,7 @@
 const { Router } = require('express')
 const dto = require('../../models/dto/dto.js')
 const logger = require('../../logger/index.js')
+const { authToken } = require('../../utils/generateToken.js')
 
 
 class CustomRouter  {
@@ -72,21 +73,25 @@ class CustomRouter  {
         let user
         if(req.session.passport){ 
           user = await dto.setUser(req.session.passport.user) 
+        } else if(req.headers.authorization){
+            const { authorization } =  req.headers 
+            const token = authorization.split(' ')[1] // separa el barear para que solo quede el token
+            user = authToken(token) // consigue el usuario
         }
         else { user = null}
-            if (!user) {
-                return res.status(401).send({
-                    error: "Not logged in"
-                })
-            }
-
+        if (!user) {
+            return res.status(401).send({
+                error: "Not logged in"
+            })
+        }
+        
             if (!policies.includes(user.role)) {
                 return res.status(403).send({
                     success: false,
                     error: "Forbbiden"
                 })
             }
-            logger.debug("rol correcto")
+            logger.info("rol correcto")
             next()
         }
     }

@@ -5,6 +5,7 @@ const productManager = new ProductManager()
 const errorMesage = require('../errors/errorMesage')
 const errorType = require('../errors/errorTypes')
 const logger = require('../logger')
+const { authToken } = require('../utils/generateToken.js')
 
 const getAll =  async (req, res) => {
   let { limit, page, sort, query } = req.query
@@ -37,7 +38,6 @@ const getAll =  async (req, res) => {
       var _user
       if (req.session.passport){
         _user = await dto.setUser(req.session.passport.user)
-        console.log(_user)
         }
 
       else{ _user = null}
@@ -57,29 +57,49 @@ const getAll =  async (req, res) => {
     
 
   const createProduct = async (req, res) => {
-    const { body } = req
-    const product = await productManager.addProduct(body)
-    await productManager.addProduct(body)
-    res.send(`Producto creado con el _id ${product._id}` ) 
+    const body = req.body
+    const { authorization } =  req.headers 
+
+    const token = authorization.split(' ')[1] 
+    user = authToken(token)
+    body.owner = (user.role !== 'admin') ? user.id : 'admin'
+
+    const product = await productManager.add(body)
+    res.send({
+      message:`Producto creado con el _id ${product._id}`,
+      code: 202
+    }).status(202)
   }
 
   const modifyProduct = async (req,res) => {
-    const {pid} = req.params
+    const { pid } = req.params
     const {body} = req
+    const { authorization } =  req.headers 
+
+    const token = authorization.split(' ')[1] 
+    user = authToken(token)
+
     try {
-    const result = await productManager.modifyProduct(pid, body)
-    console.log(result)
-    if (result) {
-      res.sendStatus(202)
-      return
-    }
-    res.sendStatus(404)
-    CustomError.createError({
-      name: "Product not found",
-      cause: "ID not found",
-      msg: errorMesage.notFound(pid),
-      code: errorType.INVALID_TYPES
-    })
+      if(user.role == 'admin' || product.owner == user._id){
+        const result = await productManager.modifyElement(pid, body)
+        console.log(result)
+        if (result) {
+          res.sendStatus(202)
+          return
+        }
+        res.sendStatus(404)
+        CustomError.createError({
+          name: "Product not found",
+          cause: "ID not found",
+          msg: errorMesage.notFound(pid),
+          code: errorType.INVALID_TYPES
+        })
+        } else{
+          res.send({
+            message: 'Insufficient permissions',
+            code: 401
+          }).code(401)
+        }
     }
     catch(e){
       console.error(e)
@@ -88,25 +108,28 @@ const getAll =  async (req, res) => {
   }
 
   const deleteProduct = async (req,res) => {
-    const {pid} = req.params
-  
+    const { pid } = req.params
+    const { authorization } =  req.headers 
+
+    const token = authorization.split(' ')[1] 
+    user = authToken(token)
     try {
-        //await productManager.deleteProduct(pid)
-        const result = await productManager.deleteProduct(pid)
-  
-        if (result) {
-          res.sendStatus(200)
-          res.send("Producto Eliminado")
-          return
+        const product = await productManager.getElementById(pid)
+        if(user.role == 'admin' || product.owner == user._id){
+          const result = await productManager.delete(pid)
+          if (result) {
+            res.send({
+              message: "Producto Eliminado",
+              code: 200
+            }).code(200)
+            return
+          }
+        }else{
+          res.send({
+            message: 'Insufficient permissions',
+            code: 401
+          }).code(401)
         }
-        CustomError.createError({
-          name: "Product not found",
-          cause: "ID not found",
-          msg: errorMesage.notFound(pid),
-          code: errorType.INVALID_TYPES
-        })
-        res.sendStatus(404)
-        res.send("Producto no encontrado, pruebe con otro id")
   
     } catch (error) {
       console.error(error)

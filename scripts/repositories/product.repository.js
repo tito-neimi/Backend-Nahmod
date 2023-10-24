@@ -37,7 +37,6 @@ class productManager  extends BaseMananger{
   }
   async getByOwner  (owner) {
     const result =  await this.model.find({owner: owner}).lean()
-    console.log(result)
     return result
   }
 }

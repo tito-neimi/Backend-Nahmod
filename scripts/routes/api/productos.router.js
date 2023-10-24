@@ -11,7 +11,7 @@ class productRouter extends CustomRouter {
 
     this.post('/',["premium",'admin'], createProduct)
     this.put('/:pid', ['premium', 'admin'], modifyProduct)
-    this.delete('/:pid', ['premium','admin'], deleteProduct)
+    this.delete('/:pid/', ['premium','admin'], deleteProduct)
   }
 }
 module.exports = {

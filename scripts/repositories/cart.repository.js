@@ -1,5 +1,8 @@
 const logger = require('../../logger')
 const cartModel = require('../../models/cart.model')
+const productManager = require('./product.repository')
+const ProductManager = new productManager()
+
 
 class cartManager {
   constructor() {
@@ -17,15 +20,18 @@ class cartManager {
     return cart
   }
 
-  async addProductToCart (cid,item) {
-    console.log(item.quantity)
+  async addProductToCart (cid,item, user) {
 
-    const result = await cartModel.findOneAndUpdate(
-    { _id: cid },
-    { $push: { products: {_id: item._id, quantity: item.quantity} } },
-    { new: true }
-    );
-    logger.info("producto agregado al carrito, nuevo carriot :", result)
+    const product = ProductManager.getElementById(item._id)
+    if (user.owner !== product.owner){
+
+      const result = await cartModel.findOneAndUpdate(
+      { _id: cid },
+      { $push: { products: {_id: item._id, quantity: item.quantity} } },
+      { new: true }
+      );
+      logger.info("producto agregado al carrito, nuevo carriot :", result)
+      }
     }
 
   async deleteProductFromCart (cid, pid) {

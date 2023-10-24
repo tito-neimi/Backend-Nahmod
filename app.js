@@ -51,7 +51,6 @@ const port = config.PORT
 const logger = require('./logger/index.js')
 const loggerMiddleware = require('./middleware/logger.middleware.js')
 
-
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
@@ -59,6 +58,7 @@ app.use(loggerMiddleware)
 app.use('/static', express.static(path.join(__dirname,'/public')))
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
+app.use(express.json())
 
 
   // const mongoService = mongoDbservice.getInstance()
@@ -119,7 +119,7 @@ io.on('connection', async (socket) => {
   })
 
   socket.on('addToCart', async (cid, pid, quantity = 1) => {
-    await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity})
+    await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity}, _user)
   })  
 
   socket.on ('addProduct', async (data) => {
