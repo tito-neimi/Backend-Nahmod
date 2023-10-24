@@ -55,7 +55,12 @@ const getCartById = async (req, res) => {
     const { cid } = req.params
   const cart = await cartPopulate(cid)
   const totalPrice = getTotalPrice(cart)
-  res.render ('singleCart', {cart: cart, totalPrice: totalPrice })
+  var _user
+  if (req.session.passport){
+    _user = await dto.setUser(req.session.passport.user)
+  }
+  else{ _user = null}
+  res.render ('singleCart', {cart: cart, totalPrice: totalPrice, user: _user ?  {..._user, isAdmin: _user?.role == 'admin'} : null})
   } catch (error) {
     customError.createError({
       name: "Product not found",

@@ -1,7 +1,8 @@
-<div class="d-flex justify-content-center align-items-center h-auto flex-column m-5">
-  <h5>Estas viendo productos en tiempo real, si un producto es eliminado/agregado lo veras inmediatamente</h5>
+<div class="d-flex justify-content-center align-items-center h-auto flex-column m-5 gap-5">
+  <h5>Estas viendo tus productos en tiempo real, si un producto es eliminado/agregado lo veras inmediatamente</h5>
 
   <div id="products" class="d-flex flex-wrap justify-content-center">
+    {{#if productos}}
     {{#each productos}}
     <div class="card m-2" style="width: 18rem;">
     <img src={{this.thumbnail}} class="card-img-top" alt="...">
@@ -14,6 +15,9 @@
         </div>
     </div>
     {{/each}}
+    {{else}}
+    <h3 >No tienes productos creados</h3>
+    {{/if}}
   </div>
 
   {{#if admin}}

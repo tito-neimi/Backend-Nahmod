@@ -3,6 +3,7 @@ const paginate = require('mongoose-aggregate-paginate-v2')
 
 const schema  = new Schema({
   id: String,
+  owner: {type: String, default: "admin"},
   title: String,
   price: Number,
   stock: {type: Number, default: 10},

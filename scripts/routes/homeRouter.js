@@ -6,8 +6,7 @@ const loggerTest = require('../../tests/logger.test.js')
 
 const homeRouter = Router()
 
-const { log } = require('handlebars');
-const { home, resetPassword, logout } = require('../../controllers/home.controller');
+const { home, resetPassword, logout, changePasswordView, changePassword } = require('../../controllers/home.controller');
 const dto = require('../../models/dto/dto');
 const { productTest } = require('../../tests/products.test');
 
@@ -87,6 +86,10 @@ homeRouter.get('/resetPassword', (req, res) => {
   res.render('resetPassword')
 })
 
-homeRouter.post('/resetPassword', resetPassword)
+homeRouter.post('/resetPassword', resetPassword) //Envia el link por email
+
+homeRouter.get('/changepassword/:token', changePasswordView) //Verifica que el token sea valido y redirecciona segun el resultado
+
+homeRouter.post('/changepassword/:token', changePassword) //Cambia la contraseña
 
 module.exports = homeRouter

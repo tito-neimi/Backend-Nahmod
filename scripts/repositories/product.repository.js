@@ -34,7 +34,11 @@ class productManager  extends BaseMananger{
     
     const products = await productModel.aggregatePaginate(myAggregate, paginateOptions)
     return products
-    
+  }
+  async getByOwner  (owner) {
+    const result =  await this.model.find({owner: owner}).lean()
+    console.log(result)
+    return result
   }
 }
 

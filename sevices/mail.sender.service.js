@@ -1,7 +1,5 @@
 const nodeMailer = require('nodemailer')
 const config = require('../config/config.js')
-const { response } = require('express')
-
 
 class MailSender {
 

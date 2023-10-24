@@ -7,7 +7,7 @@ class chatRouter extends CustomRouter {
 
     this.get('/', ["customer","admin"],  async (req, res) => {
       const _user = dto.setUser(req.session.passport.user)
-      res.render('chat', {user:_user} )
+      res.render('chat', {user:_user, isAdmin: _user.role == 'admin' || _user?.role == 'premium'} )
     })
   }
 

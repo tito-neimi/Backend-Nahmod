@@ -64,7 +64,6 @@ app.use(cookieParser('contraseña'))
   // const mongoService = mongoDbservice.getInstance()
   // const connection = mongoService.connection
 
-
 app.use(session({
   secret: 'contraseña',
   resave: true,
@@ -92,7 +91,6 @@ app.use( async (req, res, next) => {
 
 
 })
-logger.error('error en la app')
 
 //Routes
 app.use('/', homeRouter)
@@ -108,8 +106,8 @@ io.on('connection', async (socket) => {
   
   
   socket.on('deleteProduct', async (id) => {
-    await productManager.deleteProduct(id)
-    io.emit('dataUpdated', await productManager.getAll())
+    await productManager.delete(id)
+    io.emit('dataUpdated', await productManager.getByOwner((_user.role !== 'admin') ? _user.id : 'admin'))
   })
 
   socket.emit('chat-messages', messages)
@@ -125,8 +123,9 @@ io.on('connection', async (socket) => {
   })  
 
   socket.on ('addProduct', async (data) => {
-    await productManager.addProduct(data)
-    io.emit('dataUpdated', await productManager.getAll())
+    await productManager.add(data)
+    const newData = await productManager.getByOwner((_user.role !== 'admin') ? _user.id : 'admin')
+    io.emit('dataUpdated', newData )
   })
 
   socket.emit('getUser', _user)

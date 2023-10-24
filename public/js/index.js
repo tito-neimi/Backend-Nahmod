@@ -10,9 +10,9 @@ const deleteProduct = () => {
 const addProduct = async () => {
   event.preventDefault();
   const form =  document.getElementById('formProduct');
-  const datos = Object.fromEntries(new FormData(form))
+  let datos = Object.fromEntries(new FormData(form))
+  datos.owner = user.id
   socket.emit('addProduct', datos )
-  console.log(datos)
   form.reset()
 }
 
@@ -48,7 +48,12 @@ socket.on('dataUpdated', (products) => {
     </div>`
   });
   container.innerHTML = result
-
+  var select = document.getElementById("inputGroupSelect01")
+  let resultOption = ""
+  products.forEach(item => {
+    resultOption += `<option value=${item._id}>${item.title}</option>`
+  })
+  select.innerHTML = resultOption
 })
 
 const radioBtn = document.querySelectorAll("input[name='inlineRadioOptions']")

@@ -62,7 +62,7 @@ class CustomRouter  {
         next()
     }
 
-    // 3 tipos de usuario: PUBLIC, CUSTOMER, ADMIN
+    // 4 tipos de usuario: PUBLIC, CUSTOMER, PREMIUM, ADMIN
 
     handlePolicies(policies) {
       return async (req, res, next) => {

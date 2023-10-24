@@ -1,9 +1,10 @@
-const factoryManager = require('../scripts/repositories/factory.manager')
 const dto = require('../models/dto/dto.js')
 const CustomError = require('../errors/custom.error')
-const productManager = factoryManager.getManagerInstance('products')
+const ProductManager = require('../scripts/repositories/product.repository.js')
+const productManager = new ProductManager()
 const errorMesage = require('../errors/errorMesage')
 const errorType = require('../errors/errorTypes')
+const logger = require('../logger')
 
 const getAll =  async (req, res) => {
   let { limit, page, sort, query } = req.query
@@ -21,7 +22,7 @@ const getAll =  async (req, res) => {
       const {docs: products, ...pageInfo} = await productManager.getAllByPage(page, limit, sort, query)
       pageInfo.prevLink = pageInfo.hasPrevPage ? `/api/products/?page=${pageInfo.prevPage}&limit=${limit}&query=${query}&sort=${sort}` : null
       pageInfo.nextLink = pageInfo.hasNextPage ? `/api/products/?page=${pageInfo.nextPage}&limit=${limit}&query=${query}&sort=${sort}` : null
-      res.render('home', {productos:products, pageInfo:pageInfo, user: _user ?  {..._user, isAdmin: _user?.role == 'admin',} : null})
+      res.render('home', {productos:products, pageInfo:pageInfo, user: _user ?  {..._user, isAdmin: _user?.role == 'admin' || _user?.role == 'premium'} : null})
     }
     catch (error) {
       res.status(404).send("parametros erroneos")
@@ -40,10 +41,11 @@ const getAll =  async (req, res) => {
         }
 
       else{ _user = null}
-    res.render ('displayProduct', {item:product, user: _user ?  {..._user, isAdmin: _user?.role == 'admin',} : null})
+    res.render ('displayProduct', {item:product, user: _user ?  {..._user, isAdmin: _user?.role == 'admin' || _user?.role == 'premium'} : null})
     } catch (error) {
+      console.log(error)
       CustomError.createError({
-        name: "Product not found",
+        name: "Product not foundd",
         cause: "ID not found",
         msg: errorMesage.notFound(id),
         code: errorType.INVALID_TYPES
@@ -57,7 +59,7 @@ const getAll =  async (req, res) => {
   const createProduct = async (req, res) => {
     const { body } = req
     const product = await productManager.addProduct(body)
-    //await productManager.addProduct(body)
+    await productManager.addProduct(body)
     res.send(`Producto creado con el _id ${product._id}` ) 
   }
 
@@ -112,11 +114,10 @@ const getAll =  async (req, res) => {
   }
 
   const realTimeProduct = async (req, res) => {
-    const products = await productManager.getAll()
     if (req.session.passport){
       _user = await dto.setUser(req.session.passport.user)
     }
-    else _user = null
+    const products = await productManager.getByOwner((_user.role !== 'admin') ? _user.id : 'admin')
     res.render ('realTimeProducts', {productos: products, admin: true, user: _user})
   }
 
