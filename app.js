@@ -51,6 +51,9 @@ const port = config.PORT
 const logger = require('./logger/index.js')
 const loggerMiddleware = require('./middleware/logger.middleware.js')
 
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUiExpress = require('swagger-ui-express')
+
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
@@ -78,30 +81,45 @@ app.use(session({
 initPassportLocal()
 app.use(passport.initialize())
 app.use(passport.session())
+
+
 let _user
 app.use( async (req, res, next) => {
   if (req.session.passport) {
     _user = await dto.setUser(req.session.passport.user)
-}
- else{
-  _user = null
-}
-
+  }
+  else{
+    _user = null
+  }
+  
   next()
-
-
+  
+  
 })
 
 //Routes
 app.use('/', homeRouter)
 app.use('/api', routes)
 
+const specs = swaggerJsDoc({
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Plis U ecommerce',
+      description: 'An ecommerce for the clothing brand plis U'
+    }
+  },
+  apis: [`${__dirname}/docs/*.yaml`]
+})
+
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+
 app.use(handleError)
 
 io.on('connection', async (socket) => {
   logger.info(`Se ha conectado el usuario ${socket.id}`)
   productManager.getAll()
-
+  
   const messages = await chatMessageManager.getAll()
   
   

@@ -1,0 +1,216 @@
+paths: 
+  /api/cart:
+    get:
+      summary: Obtiene todos los carritos
+      tags: 
+        - Cart
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/cart'
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+        500:
+          description: Server error
+  /api/cart/{cid}:
+    put:
+      summary: Modifica un carrito
+      tags: 
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a modificar
+          schema: 
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCart'
+      response:
+        200:
+          description: Succes
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+  /api/cart/{cid}/product:
+    get:
+      summary: Obtiene un carrito
+      tags: 
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+      response:
+        200:
+          description: Succes
+          content:
+            application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCartQuantity'
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+  /api/cart/{cid}/product/{pid}:
+    put:
+      summary: Modifica la cantidad de un producto del carrito
+      tags:
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a actualizar en el carrito
+          schema: 
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCartQuantity'
+      Response:
+        200:
+          description: Succes
+          content:
+            application/json:
+            schema:
+              $ref: '#components/schemas/cart'
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+    post:
+      summary: Agrega un producto al carrito del cid
+      tags:
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a actualizar en el carrito
+          schema: 
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateCartQuantity'
+      response:
+        202:
+          description: Succes
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+    delete:
+      summary: Eliminar un producto del carrito
+      tags:
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a actualizar en el carrito
+          schema: 
+            $type: string
+      response:
+        200:
+          description: Succes
+          content:
+            application/json:
+            schema:
+              $ref: '#components/schemas/cart'
+        401:
+          description: Not a valid user
+        403:
+          descriptio: Forbbiden
+  /api/cart/{cid}/purchase:
+    get:
+      summary: Comprar el carrito
+      tags:
+        - Cart
+      parameters:
+        - name: cid
+          in: path
+          required: true
+          description: Id del carrito a utilizar
+          schema: 
+            $type: string
+      response:
+        200:
+          description: Succes
+        404:
+          description: Cart not found
+components:
+  requestBodies:
+    updateCartQuantity:
+      type: number
+      example:
+        10
+    updateCart:
+      type: object
+      propierties:
+        _id:
+          type: ObjectId
+          description: Id dado por mongo
+        products:
+          type: array
+          description: array de los productos del carrito 
+      example:
+        _id: ObjectId('XXX')
+        products: [{ _id: ObjectId('XXX'), quantity: 1}]
+  schemas:
+    cart:
+      type: object
+      properties: 
+        _id:
+          type: ObjectId
+          description: Id dado por mongo
+        products:
+          type: array
+          description: array de los productos del carrito 
+      example:
+        _id: ObjectId('XXX')
+        products: [{ _id: ObjectId('XXX'), quantity: 1}]

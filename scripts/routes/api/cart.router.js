@@ -12,18 +12,18 @@ class CartRouter extends CustomRouter {
   init () {
     this.router.param('cartId', setCart)
 
-    this.get('/', ["admin"], getAllCarts)
+    this.get('/', ["admin"], getAllCarts) 
 
-    this.get('/:cid/products', ['customer', 'admin'], getCartById)
+    this.get('/:cid/product', ['customer', 'admin'], getCartById)
 
     //To do: poner verificaciones para el producto y el carrito
-    this.put('/:cid/products/productId', ['customer', 'admin'], modifyCartQuantity)
+    this.put('/:cid/product/:pid', ['customer', 'admin'], modifyCartQuantity) 
       //to do: poner verificaciones tanto en el cid como en el pid
-    this.delete('/:cid/product/:pid', ['customer', 'admin'], deleteCartProduct)
+    this.delete('/:cid/product/:pid', ['customer', 'admin'], deleteCartProduct) 
 
-    this.put('/:cid', ['admin'], modifyCart)
+    this.put('/:cid', ['admin'], modifyCart) 
 
-    this.post('/:cid/product/:pid',['admin'], addProductToCart)
+    this.post('/:cid/product/:pid',['admin'], addProductToCart) 
 
     this.get('/:cid/purchase', ['customer', 'admin'], purchase)
   }

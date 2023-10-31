@@ -120,7 +120,7 @@ const purchase = async (req, res) => {
   } catch (error) {
     console.error("error ", error)
   }
-  res.send("ok")
+  res.send("Carrito comprado")
 }
 
 

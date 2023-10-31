@@ -26,7 +26,7 @@ const getAll =  async (req, res) => {
       res.render('home', {productos:products, pageInfo:pageInfo, user: _user ?  {..._user, isAdmin: _user?.role == 'admin' || _user?.role == 'premium'} : null})
     }
     catch (error) {
-      res.status(404).send("parametros erroneos")
+      res.status(400).send("parametros erroneos")
       
     }
   }
@@ -115,6 +115,12 @@ const getAll =  async (req, res) => {
     user = authToken(token)
     try {
         const product = await productManager.getElementById(pid)
+        if (!product){
+          res.send({
+            message: 'Not found',
+            code: 404
+          }).code(404)
+        }
         if(user.role == 'admin' || product.owner == user._id){
           const result = await productManager.delete(pid)
           if (result) {
