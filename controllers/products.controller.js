@@ -66,7 +66,8 @@ const getAll =  async (req, res) => {
 
     const product = await productManager.add(body)
     res.send({
-      message:`Producto creado con el _id ${product._id}`,
+      message:`Producto creado`,
+      pid: product._id,
       code: 202
     }).status(202)
   }

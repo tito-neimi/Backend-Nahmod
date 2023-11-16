@@ -95,10 +95,12 @@ const changePasswordView = async (req, res) => {
   }
 
 const logout =  async (req, res) => {
-  const {username} = req.user
+  const {username, _id} = req.user
   res.clearCookie('token')
-  req.logOut((error) => { 
+  console.log(req.user)
+  req.logOut(async (error) => { 
     if (!error) {
+      await userManager.modifyProperty(_id, "lastConection", Date.now())
       res.render('logout', {user: username})
     }
   })

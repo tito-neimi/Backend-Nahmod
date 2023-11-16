@@ -1,4 +1,4 @@
-const { signup, login,loginn, LocalStrategy } = require("./passport.local.config")
+const { signup, login, LocalStrategy } = require("./passport.local.config")
 
 const passport = require('passport')
 const userManager = require('../scripts/repositories/user.repository')
@@ -10,7 +10,7 @@ const logger = require("../logger")
 
 const init = () => {
   passport.use('local-signup', new LocalStrategy({usernameField: 'email', passReqToCallback: true},signup))
-  passport.use('local-login', new LocalStrategy({usernameField: 'email'}, loginn))
+  passport.use('local-login', new LocalStrategy({usernameField: 'email'}, login))
   passport.use(strategyName, new githubStrategy(gitHubAccesConfig, profileGithubController)) //strategyname = "github"
 
   

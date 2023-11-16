@@ -20,7 +20,6 @@ async delete (id) {
   }
   else {
     await this.model.deleteOne({_id : id})
-    console.log("eliminado")
     return true
   }}
 
@@ -41,6 +40,26 @@ async delete (id) {
       return false;
     }
   }
+
+  async modifyProperty(id, prop, data) {
+    try {
+      console.log("modificando")
+      const updateObject = { $set: {} };
+      updateObject.$set[prop] = data;
+      console.log(`Data: ${data}, Prop: ${prop}, id: ${id}`)
+      const result = await this.model.updateOne({ _id: id }, updateObject);
+  
+      console.log("resultado: ", result);
+  
+      // Verificar si se realizó al menos una actualización
+      if (result.matchedCount >= 1) return result;
+
+    } catch (e) {
+      console.error(e);
+      return false;
+    }
+  }
+  
 
   async getAllByPage (page, limit, sort, query) {
     const paginateOptions = {page: page, limit:limit}

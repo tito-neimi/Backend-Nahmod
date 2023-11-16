@@ -30,7 +30,7 @@ const signup = async (req, email, password, done) => {
   
 }
 
-const loginn = async (email, password, done) => {
+const login = async (email, password, done) => {
   try {
     const user = await userManager.getByEmail(email)
     if (!user) {
@@ -42,7 +42,7 @@ const loginn = async (email, password, done) => {
     if(!isValidPassword(password, user.password )) {
       return done("Contraseña incorrecta", false)
     }
-
+    await userManager.modifyProperty(user._id, "lastConection", Date.now())
     return done(null, user)
 
   } catch (error) {
@@ -50,27 +50,5 @@ const loginn = async (email, password, done) => {
   }
 }
 
-const login = async ( email, password, done) => {
-  // const {email: , password} = req.body
-  try {
-    const _user = await userManager.getByEmail(email)
-    if (!_user) {
-      return done("User not found", false)
-    }
 
-    
-    if (!password) {
-      return done("Password not enter", false)
-    }
-    if (!isValidPassword(password, _user.password)){
-      return done("Incorrect password", false)
-    }
-    const {password: _password, ...user} = _user
-    return done(null, user)
-  } catch (error) {
-    logger.error(error)
-    return done(error, false)
-  }
-}
-
-module.exports = {signup, login, loginn, LocalStrategy}
+module.exports = {signup, login, LocalStrategy}

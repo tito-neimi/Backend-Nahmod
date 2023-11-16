@@ -4,14 +4,24 @@ const { Schema, model } = require('mongoose')
 
 const schema  = new Schema({
   cartId: String, 
-  fisrtName: String,
+  firstName: String,
   lastName: String, 
   email: String,
   username: String,
   password: String,
   gender: String,
-  createdDate: {type:String, default: Date.now()},
+  lastConection: {type: Date, default: Date.now()},
+  createdDate: {type:Date, default: Date.now()},
   role: {type: String, default: "customer"},
+  files: {type: 
+    [
+      {
+        name: String, 
+        tipo: String, // document || profile || product
+        reference: String,
+      }
+    ]
+  , default:[]}
 })
 
 

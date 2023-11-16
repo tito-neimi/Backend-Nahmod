@@ -59,10 +59,10 @@ app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
 app.use(loggerMiddleware)
 app.use('/static', express.static(path.join(__dirname,'/public')))
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
 app.use(express.json())
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
   // const mongoService = mongoDbservice.getInstance()
   // const connection = mongoService.connection

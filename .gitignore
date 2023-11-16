@@ -1,3 +1,5 @@
 /node_modules
 /sessions
 /logs
+.dockerignore
+Dockerfile

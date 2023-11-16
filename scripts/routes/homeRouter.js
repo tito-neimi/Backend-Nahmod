@@ -9,7 +9,7 @@ const homeRouter = Router()
 const { home, resetPassword, logout, changePasswordView, changePassword } = require('../../controllers/home.controller');
 const dto = require('../../models/dto/dto');
 const { productTest } = require('../../tests/products.test');
-
+const userManager = require('../../scripts/repositories/user.repository.js')
 
 homeRouter.get('/', home)
 
@@ -25,6 +25,7 @@ const githubLogin = async (req, res) => {
     role: user.role,
     email: user.email
   }
+  await userManager.modifyProperty(_id, "lastConection", Date.now())
   res.redirect("/")
 }
 
