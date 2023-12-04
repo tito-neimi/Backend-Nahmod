@@ -104,7 +104,7 @@ if (buttonA) {
   buttonA.addEventListener('click', (event) => {
     var query = document.getElementById("filterSelected").value
     event.preventDefault()
-    window.location.href = `http://localhost:8080/api/products/?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
+    window.location.href = `?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
   })
 }
 
