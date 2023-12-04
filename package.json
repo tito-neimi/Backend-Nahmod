@@ -5,7 +5,8 @@
   "scripts": {
     "test": "mocha tests/users.test.js",
     "test-i": "mocha tests/integration.test.js",
-    "start": " nodemon ./app"
+    "start": " node ./app",
+    "dev": "nodemon ./app"
   },
   "author": "Joaquin Nahmod",
   "license": "ISC",
