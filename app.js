@@ -1,87 +1,132 @@
+
+const {Command} = require('commander')
+const program = new Command()
+const path = require('path')
+
+//Para ejecutar el modo developent se inicia asi: npm run start -- --env development
+program.option('-e, --env <env>','Entorno de desarrollo', 'production')
+program.parse()
+const {env} = program.opts()
+
+const dotenv = require('dotenv')
+dotenv.config({
+  path: path.join(__dirname, env == 'development' ? '.env.development' : '.env')
+})
+
+
 const routes = require('./scripts/routes')
 const express = require('express')
 const http = require('http')
 const { Server} = require('socket.io')
 const cookieParser = require('cookie-parser')
-const path = require('path')
 const handlebars = require('express-handlebars')
 const homeRouter = require('./scripts/routes/homeRouter')
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
+const mongoDbservice = require('./sevices/mongo.db.js')
+
+
+
 const bodyParser = require('body-parser');
 const session = require('express-session')
-// const fileStore = require('session-file-store')
 const MongoStrore = require('connect-mongo')
+const passport = require('passport')
 
 
-const ProductManager = require('./scripts/managers/index')
+const ProductManager = require('./scripts/repositories/product.repository')
 const productManager = new ProductManager()
-const chatMessageManager = require('./scripts/managers/chatManager')
-const cartManager = require('./scripts/managers/cartManager')
+const chatMessageManager = require('./scripts/repositories/chat.repository')
+const cartManager = require('./scripts/repositories/cart.repository')
 const CartManager = new cartManager()
-
-const port = 8080;
+const userManager = require('./scripts/repositories/user.repository.js')
+const initPassportLocal = require('./config/passport.init')
+const dto = require('./models/dto/dto.js')
+const handleError = require('./middleware/errors/index.js')
 
 const app = express();
 const server = http.createServer(app)
 const io = new Server(server)
-// const FileStore = fileStore(session)
 
+const config = require('./config/config.js')
+const port = config.PORT
+
+const logger = require('./logger/index.js')
+const loggerMiddleware = require('./middleware/logger.middleware.js')
+
+const swaggerJsDoc = require('swagger-jsdoc')
+const swaggerUiExpress = require('swagger-ui-express')
 
 app.engine('handlebars', handlebars.engine()) 
 app.set('views', path.join(__dirname, '/views'))
 app.set('view engine', 'handlebars')
+app.use(loggerMiddleware)
 app.use('/static', express.static(path.join(__dirname,'/public')))
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('contraseña'))
+app.use(express.json())
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+  // const mongoService = mongoDbservice.getInstance()
+  // const connection = mongoService.connection
+
 app.use(session({
   secret: 'contraseña',
   resave: true,
   saveUninitialized: true,
-  // store: new FileStore({ path: './sessions', ttl:604800000, retries:5 })
   store: MongoStrore.create({
-    mongoUrl: "mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority",
+    mongoUrl: config.MONGO_URL,
     ttl: 86400
   })
 }))
 
-mongoose.set('strictQuery', true)
-mongoose.connect("mongodb+srv://app:nOUBMYzHv2F2HGyr@cluster0.oa8pf35.mongodb.net/ecommerce?retryWrites=true&w=majority"), (error) => {
-  if (error) {
-    console.log('coneccion fallida', error)
-    process.exit()
-  }
-  else {
-    console.log('base de datos conectada')
-  }
-}
+
+initPassportLocal()
+app.use(passport.initialize())
+app.use(passport.session())
 
 
-app.use( (req, res, next) => {
-  console.log(req.session.user)
-  if (req.session.user) {
-    req.user = {
-      name: req.session.user.username,
-      role: req.session.user.role
-    }
+let _user
+app.use( async (req, res, next) => {
+  if (req.session.passport) {
+    _user = await dto.setUser(req.session.passport.user)
   }
+  else{
+    _user = null
+  }
+  
   next()
-
-
+  
+  
 })
 
 //Routes
 app.use('/', homeRouter)
 app.use('/api', routes)
 
-io.on('connection', async (socket) => {
-  console.log(`Se ha conectado el usuario ${socket.id}`)
-  productManager.getAll()
+const specs = swaggerJsDoc({
+  definition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Plis U ecommerce',
+      description: 'An ecommerce for the clothing brand plis U'
+    }
+  },
+  apis: [`${__dirname}/docs/*.yaml`]
+})
 
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+
+app.use(handleError)
+
+io.on('connection', async (socket) => {
+  logger.info(`Se ha conectado el usuario ${socket.id}`)
+  productManager.getAll()
+  
   const messages = await chatMessageManager.getAll()
   
+  
   socket.on('deleteProduct', async (id) => {
-    await productManager.deleteProduct(id)
-    io.emit('dataUpdated', await productManager.getAll())
+    await productManager.delete(id)
+    io.emit('dataUpdated', await productManager.getByOwner((_user.role !== 'admin') ? _user.id : 'admin'))
   })
 
   socket.emit('chat-messages', messages)
@@ -89,29 +134,39 @@ io.on('connection', async (socket) => {
   socket.on('chat-message', (message) => {
     messages.push(message)
     chatMessageManager.createMessage(message)
-    console.log("add", messages)
     socket.broadcast.emit('add-message', message)
   })
 
-  socket.on('addToCart', async (cid, pid, quantity) => {
-    await CartManager.addProductToCart(cid, {pid: pid, quantity:quantity})
+  socket.on('addToCart', async (cid, pid, quantity = 1) => {
+    console.log(`cid: ${cid}, pid: ${pid}, quantity: ${quantity}`)
+    const response = await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity}, _user)
+    if (!response){
+      socket.emit('addToCartResponse', {error: "You cannot add your own products to the cart"})
+    }else{
+      socket.emit('addToCartResponse', {message: "Product added to cart successfully"})
+    }
   })  
 
   socket.on ('addProduct', async (data) => {
-    await productManager.addProduct(data)
-    io.emit('dataUpdated', await productManager.getAll())
+    await productManager.add(data)
+    const newData = await productManager.getByOwner((_user.role !== 'admin') ? _user.id : 'admin')
+    io.emit('dataUpdated', newData )
   })
 
-  
+  socket.emit('getUser', _user)
+
+  socket.on('changeRole', async ({id, role}) => {
+    userManager.modifyProperty(id,'role',role)
+  })
 
   socket.on('disconnect', () => {
-    console.log('usuario desconectado')
+    logger.info('usuario desconectado')
   })
 })
 
 
 server.listen(port, () => {
-  console.log(`La app se esta ejecutando en el puerto ${port}`)
+  logger.info(`La app se esta ejecutando en el puerto ${port}`)
 })
 
 

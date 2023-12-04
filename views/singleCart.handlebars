@@ -1,0 +1,29 @@
+<div class="d-flex justify-content-center align-items-center w-100 mt-5 flex-column">
+  <h2>Cart of {{user.firstName}} {{user.lastName}}</h2>
+  <div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Title</th>
+          <th scope="col">Price</th>
+          <th scope="col">Quantity</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each cart.products}}
+        <tr>
+          <th scope="row"> {{this._id.title}}</th>
+          <td>{{this._id.price}}</td>
+          <td>{{this.quantity}}</td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    <p>Total Price: {{totalPrice}}</p>
+  </div>
+  {{#if cart.products}}
+    <a href="./purchase" class="btn btn-primary">Purchase</a>
+  {{else}}
+    <a href="/api/products" class="btn btn-primary">See some products</a>
+  {{/if}}
+</div>

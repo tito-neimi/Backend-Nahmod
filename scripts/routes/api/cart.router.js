@@ -2,61 +2,36 @@ const { Router } = require('express')
 const router = Router()
 const express = require('express')
 
-const cartManager = require('../../managers/cartManager')
-const CartManager = new cartManager()
-const ProductManager = require('../../managers/index')
-const productManager = new ProductManager()
+const CustomRouter = require('../custom.router.api')
+const { setCart, getAllCarts, getCartById, modifyCartQuantity, deleteCartProduct, modifyCart, addProductToCart, purchase } = require('../../../controllers/cart.controller')
 
 router.use(express.json())
 router.use(express.urlencoded({extended: true}))
 
+class CartRouter extends CustomRouter {
+  init () {
+    this.router.param('cartId', setCart)
 
-router.post (('/'), async (req, res) => {
-  await CartManager.newCart() 
-  res.send("Ok")
-})
+    this.get('/', ["admin"], getAllCarts) 
 
-router.get(("/"), async (req, res) => {
-  res.send( await CartManager.getAll())
-})
-router.get (('/:cid'), async (req, res) => {
+    this.get('/:cid/products', ['customer', 'admin'], getCartById)
 
-  const { cid } = req.params
-  const cart = await CartManager.getCartById(cid)
-  res.render ('singleCart', {cart: cart})
-})
+    //To do: poner verificaciones para el producto y el carrito
+    this.put('/:cid/product/:pid', ['customer', 'admin'], modifyCartQuantity) 
+      //to do: poner verificaciones tanto en el cid como en el pid
+    this.delete('/:cid/product/:pid', ['customer', 'admin'], deleteCartProduct) 
 
-router.post(('/:cid/product/:pid'), async (req, res) => {
-  const {cid, pid} = req.params
-  const item = {id: pid, quantity: 1}
-  CartManager.addProductToCart(cid, item)
-  res.send("Ok")
-})
+    this.put('/:cid', ['admin'], modifyCart) 
 
-router.delete(('/:cid/product/:pid'), async (req, res) => {
-  const {cid, pid} = req.params
-  const result = await CartManager.deleteProductFromCart(cid, pid)
-  res.send(result)
-})
+    this.post('/:cid/product/:pid',['admin'], addProductToCart) 
 
-router.delete(('/:cid'), async (req, res) => {
-  const {cid} = req.params
-  const result = await CartManager.deleteProductFromCart(cid)
-  res.send(result)
-})
+    this.get('/:cid/purchase', ['customer', 'admin'], purchase)
+  }
 
-router.put(('/:cid'), async (req, res) => {
-  const {cid} = req.params
-  const { body } = req
-  const result = await CartManager.updateProductFromCart(cid, body)
-  res.send(result)
-})
+}
 
-router.put(('/:cid/products/:pid'), async (req, res) => {
-  const {cid, pid} = req.params
-  const { body } = req
-  const result = await CartManager.updateQuantity(cid,pid,body)
-  res.send(result)
-})
 
-module.exports = router
+
+module.exports = {
+  custom: new CartRouter()
+}

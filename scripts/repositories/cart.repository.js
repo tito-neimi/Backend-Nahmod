@@ -1,28 +1,18 @@
-const fs = require('fs/promises')
-const path = require('path')
+const logger = require('../../logger')
 const cartModel = require('../../models/cart.model')
-const { captureRejectionSymbol } = require('events')
+const productManager = require('./product.repository')
+const ProductManager = new productManager()
+
 
 class cartManager {
   constructor() {
-    this.filepaht = path.join(__dirname, '../../data', 'cart.json')
     this.carts = []
-    this.setCarritos()
   }
 
-  async setCarritos () {
-    const data = await fs.readFile(this.filepaht, 'utf-8');
-    this.carts = JSON.parse(data) || [];
-  }
-  
-  async Update () {
-    await fs.writeFile(this.filepaht, JSON.stringify(this.carts))
-    }
-
-  async newCart () {
-    const cart = await cartModel.create()
+  async newCart (body) {
+    const cart = await cartModel.create({products: body ? body.products : []})
     console.log('carrito agregado')
-    this.carts.push(cart)
+    return cart._id
   }
 
   async getCartById(cid) {
@@ -30,14 +20,20 @@ class cartManager {
     return cart
   }
 
-  async addProductToCart (cid,item) {
-    const cart = await this.getCartById(cid)
-    cart[0].products.push(item)
-    const newArray = cart[0].products
-    if (cart) {
-      const result = await cartModel.updateOne({_id: cid}, {$set: {products: newArray}})
-      console.log(result)
-    }
+  async addProductToCart (cid,item, user) {
+
+    const product = ProductManager.getElementById(item._id)
+    if (user.owner !== product.owner){
+
+      const result = await cartModel.findOneAndUpdate(
+      { _id: cid },
+      { $push: { products: {_id: item._id, quantity: item.quantity} } },
+      { new: true }
+      );
+      logger.info("producto agregado al carrito, nuevo carriot :", result)
+      }else {
+        return false
+      }
     }
 
   async deleteProductFromCart (cid, pid) {
@@ -46,15 +42,14 @@ class cartManager {
       const itemRef = cart[0].products.filter(prod => prod !== pid)
       cart[0].products = itemRef
       const result = await cartModel.updateOne({_id: cid}, {$set: {products: cart[0].products}})
-      console.log(result)
       return result
     }
     else {
       const result = await cartModel.updateOne({_id:cid}, {$set: {products: []}})
-      console.log(result)
       return result
     }
   }
+  
   
   async updateProductFromCart (cid, items) {
     const result = await cartModel.updateOne({_id: cid}, {$set:{products: items}})
@@ -66,10 +61,9 @@ class cartManager {
     const result = await cartModel.updateOne({_id: cid, "products.pid": pid}, {$set:{"products.$.quantity": body[0]}}) 
     return result
   }
- 
-  async getAll() {
-    let cart = await cartModel.findOne({_id: "64d001e65a9ce9d273c430f8"})
-    console.log(cart)
+
+  async getAllCarts(){
+    return await cartModel.find({}).lean()
   }
   }
 

@@ -1,4 +1,4 @@
-<div class="2-100 h-100 d-flex justify-content-center align-items-center">
+<div class="2-100 h-100 d-flex justify-content-center align-items-center flex-column">
 <form class="rounded-4  border border-4 px-5" method="post">
   <h2 class="text-center my-3">Log in</h2>
   <div class="form-outline mb-4">
@@ -20,7 +20,7 @@
     </div>
 
     <div class="col">
-      <a href="#!">Forgot password?</a>
+      <a href="/resetPassword">Forgot password?</a>
     </div>
   </div>
 
@@ -31,8 +31,13 @@
   </div>
   {{#if error}}
     <div class="text-center">
-      <h4 class="text-danger m-3">{{error}}</h4>
+      <h5 class="text-danger m-3">{{error}}</h5>
     </div>
   {{/if}}
 </form>
+<div>
+  <span class="">
+    <a class="p-2 rounded-circle border border-primary d-flex justify-content-center align-items-center" href="/github"><i class="bi bi-github" style="font-size: 1.5rem;"></i></a>
+  </span>
+</div>
 </div>

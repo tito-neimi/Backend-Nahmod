@@ -1,0 +1,179 @@
+paths: 
+  /api/products:
+    get:
+      summary: Obtiene todos los productos
+      tags: 
+        - Products
+      parameters:
+        - in: query
+          name: limit
+          type: integer
+          description: Numero de items a mostrar por pagina
+        - in: query
+          name: page
+          type: integer
+          description: Pagina a mostrar
+        - in: query
+          name: sort
+          type: integer
+          description: Modo de orden(asc/descn)
+        - in: query
+          name: query
+          type: string
+          description: filtro a aplicar
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Products'
+        404:
+          description: Parametros erroneos
+    post:
+      summary: Crea un producto
+      tags: 
+        - Products
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      responses:
+        200:
+          description: Succes
+  /api/products/{pid}:
+    get:
+      summary: Obtiene un solo producto atravez del id
+      tags: 
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a utilizar
+          schema: 
+            $type: string
+      response:
+        200:
+          description: Succes
+        404:
+          description: Not found
+    put:
+      summary: Modifica un producto atravez del id
+      tags: 
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a utilizar
+          schema: 
+            $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#components/requestBodies/updateProduct'
+      response:
+        202:
+          description: Succes
+        401:
+          description: Insufficient permissions
+        404:
+          description: Not found
+    delete:
+      summary: Elimina un producto atravez del id
+      tags: 
+        - Products
+      parameters:
+        - name: pid
+          in: path
+          required: true
+          description: Id del producto a utilizar
+          schema: 
+            $type: string
+      responses:
+        200:
+          description: Succes,
+        401:
+          description: Insufficient permissions
+        404:
+          description: Not found
+  /api/products/realtimeproducts:
+    get:
+      summary: Obtiene todos los productos en tiempo real y contiene dos apartados para que los premium y admins puedan elimar/subir productos
+      tags: 
+        - Products
+components:
+  requestBodies:
+    updateProduct:
+      type: object
+      properties: 
+        _id:
+          type: ObjectId
+          description: Id dado por mongo
+        title:
+          type: string
+          description: Nombre del producto 
+        price:
+          type: number
+          description: Precio del producto
+        description:
+          type: string
+          description: Descripcion del producto
+        category:
+          type: string
+          description: Categoria del producto
+        owner:
+          type: string
+          description: Dueño del producto, Valor por default 'Admin'
+        stock:
+          tpye: number
+          description: Stock del producto
+        thumbnail:
+          tpye: string
+          description: URL de la imagen del producto
+      example:
+        _id: ObjectId('XXX')
+        title: Gorra
+        price: 23
+        description: Gorra para gente de todas las edades
+        category: Ropa de hombre
+        owner: Admin
+        stock: 20
+        thumbnail: https://static.vecteezy.com/system/resources/previews/016/268/616/non_2x/blue-baseball-cap-in-angles-view-front-mockup-baseball-cap-for-design-cartoon-vector.jpg
+  schemas:
+    Products:
+      type: object
+      properties: 
+        _id:
+          type: ObjectId
+          description: Id dado por mongo
+        title:
+          type: string
+          description: Nombre del producto 
+        price:
+          type: number
+          description: Precio del producto
+        description:
+          type: string
+          description: Descripcion del producto
+        category:
+          type: string
+          description: Categoria del producto
+        owner:
+          type: string
+          description: Dueño del producto, Valor por default 'Admin'
+      example:
+        _id: ObjectId('XXX')
+        title: Gorra
+        price: 23
+        description: Gorra para gente de todas las edades
+        category: Ropa de hombre
+        owner: Admin
+

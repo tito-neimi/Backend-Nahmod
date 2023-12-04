@@ -1,5 +1,4 @@
 
-
 const socket = io()
 
 const deleteProduct = () => {
@@ -11,25 +10,56 @@ const deleteProduct = () => {
 const addProduct = async () => {
   event.preventDefault();
   const form =  document.getElementById('formProduct');
-  const datos = Object.fromEntries(new FormData(form))
+  let datos = Object.fromEntries(new FormData(form))
+  datos.owner = user.id
   socket.emit('addProduct', datos )
-  console.log(datos)
   form.reset()
 }
 
-const userr = {
-  name: "Joa",
-  cid: "64d56f61d1f7884b293dcfc1"
-}
+let user
 
 const reset = () => {
   const formu = document.getElementById('formProduct');
   formu.reset()
 }
+var contador = 1
+const increase = () => {
+  contador++
+  document.getElementById("counter").innerHTML = contador;
+}
+
+const decrease = () => {
+  if(contador > 1){
+    contador--
+    document.getElementById("counter").innerHTML = contador;
+  }
+}
 
 const addProductToCart = (pid) => {
-  socket.emit('addToCart',userr.cid ,pid, 1)
+  socket.emit('addToCart',user.cartId ,pid, contador)
 }
+
+socket.on('addToCartResponse', (response) => {
+  if(response.error){
+    Toastify({
+      text: `${response.error}`,
+      duration: 3000,
+      close: true,
+      gravity: "bottom",
+      position: "right",
+      stopOnFocus: true, 
+      style: {
+        background: "linear-gradient(to right, #ed213a, #93291e)",
+      },
+    }).showToast();  } else{
+      const button = document.getElementById('addButton')
+      button.remove()
+      const div = document.getElementById('div-body')
+      var nuevoParrafo = document.createElement("h5");
+          nuevoParrafo.textContent = "Product added to your cart"
+      div.appendChild(nuevoParrafo)
+    }
+})
 
 socket.on('dataUpdated', (products) => {
   console.log(products)
@@ -46,7 +76,12 @@ socket.on('dataUpdated', (products) => {
     </div>`
   });
   container.innerHTML = result
-
+  var select = document.getElementById("inputGroupSelect01")
+  let resultOption = ""
+  products.forEach(item => {
+    resultOption += `<option value=${item._id}>${item.title}</option>`
+  })
+  select.innerHTML = resultOption
 })
 
 const radioBtn = document.querySelectorAll("input[name='inlineRadioOptions']")
@@ -54,6 +89,10 @@ let sort = 1
 const limit = 10
 const page = 1
 
+
+socket.on('getUser', (data) => {
+  user = data
+})
 
 const findSelected = () => {
   let select = document.querySelector("input[name='inlineRadioOptions']:checked")
@@ -65,7 +104,6 @@ if (buttonA) {
   buttonA.addEventListener('click', (event) => {
     var query = document.getElementById("filterSelected").value
     event.preventDefault()
-    console.log("hola")
     window.location.href = `http://localhost:8080/api/products/?limit=${limit}&page=${page}&sort=${sort}&query=${query}`;
   })
 }
@@ -73,3 +111,12 @@ if (buttonA) {
 radioBtn.forEach(radioBtn => {
   radioBtn.addEventListener('change', findSelected)
 })
+
+const changeRoleForm = document.getElementById('changeRole')
+const changeRole = (id) => {
+  const select = document.getElementById('changeRoleSelect')
+  console.log(select.value)
+  socket.emit('changeRole', {id: id, role: select.value})
+  
+}
+// changeRoleForm.addEventListener('submit', changeRole)

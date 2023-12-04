@@ -1,14 +1,15 @@
 function isAuth (req, res, next) {
-  if (req.user) {
+  if (req.session.passport.user) {
     next()
     return
   }
-  res.redirect('/login')
+  else {
+    res.redirect('/login')
+  }
 }
 
 function isAdmin (req, res, next) {
-  console.log(req.user)
-  if (req.user.role == "admin") {
+  if (req.session.user == "admin") {
     next()
     return
   }

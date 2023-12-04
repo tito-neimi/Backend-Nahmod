@@ -1,0 +1,28 @@
+<div>
+  <h2 class="text-center my-5">Users Dashboard</h2>
+  <div class="users-container h-100 p-3">
+    {{#each users}}
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+          <div class="col">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">{{this.name}}</h5>
+                <p class="card-text">Role: {{this.role}}</p>
+              </div>
+                <h6 class="mx-3">Change the role</h6>
+                <div class="input-group ">
+                  <select name="role" id="changeRoleSelect" class="form-select">
+                    <option value="customer">Customer</option>
+                    <option value="premium">Premium</option>
+                    <option value="admin">Admin</option>
+                  </select>
+                  <button class="btn btn-outline-secondary" onclick='changeRole("{{this.id}}")'>Change</button>
+                </div>
+            </div>
+            <div class="card-footer">
+              <small class="text-body-secondary">Last connection {{this.lastConection}} hours ago</small>
+            </div>
+        </div>
+    {{/each}}
+  </div>
+</div>

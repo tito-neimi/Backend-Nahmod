@@ -1,87 +1,96 @@
 const { Router } = require('express');
-const {isAuth, isAdmin, } = require('../../middleware/auth.middleware');
+const {isAuth} = require('../../middleware/auth.middleware');
+const passport = require('passport')
+
+const loggerTest = require('../../tests/logger.test.js')
 
 const homeRouter = Router()
 
-const userManager = require('../managers/userManager')
+const { home, resetPassword, logout, changePasswordView, changePassword } = require('../../controllers/home.controller');
+const dto = require('../../models/dto/dto');
+const { productTest } = require('../../tests/products.test');
+const userManager = require('../../scripts/repositories/user.repository.js')
+
+homeRouter.get('/', home)
 
 
-homeRouter.get('/',(req, res) => {
-  res.render('inicio', 
-  {
-    user: req.user ?  {
-    ...req.user,
-    isAdmin: req.session.user?.role == 'admin',} : null,
+
+
+
+const githubLogin = async (req, res) => {
+  const user = req.user
+  req.session.user = {
+    id: user.id,
+    name: user.firstName,
+    role: user.role,
+    email: user.email
   }
-  )
-})
-
+  await userManager.modifyProperty(_id, "lastConection", Date.now())
+  res.redirect("/")
+}
 
 homeRouter.get('/login', (_, res) => {
   res.render('login')
 })
-homeRouter.post('/login' ,async (req, res) => {
-  const user = req.body
-  //res.cookie('user', username, { maxAge:604800000 })
-  try {
-    const result = await userManager.logIn(user.email, user.password)
-    if (!result) {
-      res.render('login', {error: "wrong email or password"})
-      return
-    }
-    req.session.user = {
-      name: user.username,
-      ...result._doc
-    }
-    console.log(req.session.user)
-    res.redirect('/')
-  } catch (error) {
-    console.log(error)
-    res.render('login', {error: "An error occurred, please try again later."})
-  }
-})
 
-homeRouter.get('/logout', isAuth, (req, res) => {
-  // const {user} = req.cookies
-  // res.clearCookie('user')
-  req.session.destroy((err) => {
-    if (err) {
-      console.error(err)
-    }
-  })
-
-  res.render('logout', {user: req.user.name})
-  req.user = null
+homeRouter.post('/login', passport.authenticate('local-login', 
+{
+    successRedirect: '/',
+    failureRedirect: '/login'
 })
+);
+
+
+//Rutas GitHub
+
+homeRouter.get('/github', passport.authenticate('github'), (_, res) => {})
+homeRouter.get('/githubSessions', passport.authenticate('github'), githubLogin)
+
+
+homeRouter.get('/logout', isAuth, logout)
 
 homeRouter.get('/signup', (_, res) => {
   res.render('signup')
 })
-homeRouter.post('/signup', async (req, res) => {
-  const user = req.body
 
-  const existing = await userManager.getByUser(user.username)
-  
-  if (existing){
-    res.render('signup', {error: "The user already exist"})
-    return
+homeRouter.get('/mockingproducts', async  (req, res) => {
+  const response = await productTest()
+  res.send(JSON.stringify(response))
+})
+
+homeRouter.get('/loggerTest', (req, res) => {
+  if(loggerTest()){
+    res.send({
+      message: "Logger probado en el server",
+      status: "true"
+    }).status(202)
   }
-  try {
-    const result =  await userManager.addUser(user)
-    req.session.user = {
-      name: result.username,
-      id: result._id,
-      ...result._doc
-    }
-    res.redirect('/')
-    console.log(result)
-  } catch (error) {
-    console.error(error)
+  else{
+    res.send({
+      message: "Error al ejecutar los loggs",
+      status: "false"
+    }).status(500)
   }
 })
 
-homeRouter.get('/profile', isAuth, (req, res) => {
-  res.render('profile', {user:req.session.user})
+homeRouter.post('/signup', passport.authenticate('local-signup',{
+  successRedirect: '/',
+  failureRedirect: '/signup'
+}))
+
+homeRouter.get('/profile', isAuth , async (req, res) => {
+  _user = await dto.setUser(req.session.passport.user)
+  res.render('profile', {user: _user})
 })
+
+homeRouter.get('/resetPassword', (req, res) => {
+  res.render('resetPassword')
+})
+
+homeRouter.post('/resetPassword', resetPassword) //Envia el link por email
+
+homeRouter.get('/changepassword/:token', changePasswordView) //Verifica que el token sea valido y redirecciona segun el resultado
+
+homeRouter.post('/changepassword/:token', changePassword) //Cambia la contraseña
 
 module.exports = homeRouter
