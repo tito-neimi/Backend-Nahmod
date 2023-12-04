@@ -29,7 +29,7 @@ const githubLogin = async (req, res) => {
   res.redirect("/")
 }
 
-homeRouter.get('/login', (_, res) => {
+homeRouter.get('/login', (req, res) => {
   res.render('login')
 })
 
