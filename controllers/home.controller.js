@@ -13,7 +13,7 @@ const home = async (req, res) => {
   else _user = null
 
   let token
-  if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true, maxAge: 60*60*1000*24,});}
+  if (req.user) {token = generateToken(_user); res.cookie('token', token, {httpOnly: true});} 
   
   res.render('inicio',
   {

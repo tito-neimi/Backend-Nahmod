@@ -43,7 +43,6 @@ async delete (id) {
 
   async modifyProperty(id, prop, data) {
     try {
-      console.log("modificando")
       const updateObject = { $set: {} };
       updateObject.$set[prop] = data;
       console.log(`Data: ${data}, Prop: ${prop}, id: ${id}`)

@@ -14,7 +14,7 @@ class CartRouter extends CustomRouter {
 
     this.get('/', ["admin"], getAllCarts) 
 
-    this.get('/:cid/product', ['customer', 'admin'], getCartById)
+    this.get('/:cid/products', ['customer', 'admin'], getCartById)
 
     //To do: poner verificaciones para el producto y el carrito
     this.put('/:cid/product/:pid', ['customer', 'admin'], modifyCartQuantity) 

@@ -1,4 +1,7 @@
+const { mainData } = require('../models/dto/dto')
 const userManager = require('../scripts/repositories/user.repository')
+const mailSender = require('../sevices/mail.sender.service')
+const dto = require('../models/dto/dto')
 
 const changeUserPremium =  async (req, res) => {
   const {uid} = req.params
@@ -94,9 +97,74 @@ const uploadDocuments = async (req, res) => {
   }).status(200)
 }
 
+const getAll = async (req, res ) => {
+  const users = await userManager.getAll()
+  let newUsers = []
+  for(let i = 0; i< users.length; i++){
+    let newUser = mainData(users[i])
+    console.log(newUser)
+    newUsers.push(newUser)
+  }
+  res.send({
+    status: 202,
+    payload: newUsers
+  }).status(202)
+}
 
+const deleteUsers = async (req, res) => {
+  const users = await userManager.getAll()
+  const date = new Date()
+  const limit = 48 //En horas
+
+  date.setDate(date.getHours() - limit)
+
+  let oldUsers = users.filter(user => {
+    let lasConnectionDate = new Date(user.lastConection)
+    if (!user.lastConection) return true
+    return lasConnectionDate < date
+  })
+  for(let i = 0; i < oldUsers.length; i++ ){
+    await userManager.delete(users[i]._id)
+    mailSender.send(users[i].email, "Tu cuenta en Plis U a sido eliminada debido a tu incatividad en la pagina, puedes volver a crearte una cuenta gratuitamente en nuestra pagina, te esperamos")
+  }
+
+
+
+  res.send({
+    status:202,
+    message: `Los que han estado inactivos por mas de ${limit} dias han sido eliminados`,
+    payload: oldUsers,
+  })
+}
+
+const dashboardRender = async (req, res) => {
+  var user
+  if (req.session.passport){
+    user = await dto.setUser(req.session.passport.user)
+  } else{ user = null}
+
+  if(user?.role == 'admin'){
+
+    const users = await userManager.getAll()
+    let data = []
+    for(let i = 0; i< users.length; i++){
+      const newUser = dto.mainData(users[i])
+      newUser.lastConection = newUser.lastConection.getHours()
+      data.push(newUser)
+    }
+    res.render('userDashboard', {user:{...user, isAdmin: true}, users: data})
+  } else {
+    res.send({
+      status:401,
+      message: 'Unauthorized'
+    }).status(401)
+  }
+}
 
 module.exports = {
   changeUserPremium,
-  uploadDocuments
+  uploadDocuments,
+  getAll,
+  deleteUsers,
+  dashboardRender
 }

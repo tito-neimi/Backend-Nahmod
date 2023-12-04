@@ -37,6 +37,7 @@ const productManager = new ProductManager()
 const chatMessageManager = require('./scripts/repositories/chat.repository')
 const cartManager = require('./scripts/repositories/cart.repository')
 const CartManager = new cartManager()
+const userManager = require('./scripts/repositories/user.repository.js')
 const initPassportLocal = require('./config/passport.init')
 const dto = require('./models/dto/dto.js')
 const handleError = require('./middleware/errors/index.js')
@@ -137,7 +138,13 @@ io.on('connection', async (socket) => {
   })
 
   socket.on('addToCart', async (cid, pid, quantity = 1) => {
-    await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity}, _user)
+    console.log(`cid: ${cid}, pid: ${pid}, quantity: ${quantity}`)
+    const response = await CartManager.addProductToCart(cid, {_id: pid, quantity:quantity}, _user)
+    if (!response){
+      socket.emit('addToCartResponse', {error: "You cannot add your own products to the cart"})
+    }else{
+      socket.emit('addToCartResponse', {message: "Product added to cart successfully"})
+    }
   })  
 
   socket.on ('addProduct', async (data) => {
@@ -148,7 +155,9 @@ io.on('connection', async (socket) => {
 
   socket.emit('getUser', _user)
 
-  
+  socket.on('changeRole', async ({id, role}) => {
+    userManager.modifyProperty(id,'role',role)
+  })
 
   socket.on('disconnect', () => {
     logger.info('usuario desconectado')

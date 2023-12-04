@@ -31,6 +31,8 @@ class cartManager {
       { new: true }
       );
       logger.info("producto agregado al carrito, nuevo carriot :", result)
+      }else {
+        return false
       }
     }
 
@@ -47,6 +49,7 @@ class cartManager {
       return result
     }
   }
+  
   
   async updateProductFromCart (cid, items) {
     const result = await cartModel.updateOne({_id: cid}, {$set:{products: items}})

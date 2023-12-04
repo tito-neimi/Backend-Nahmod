@@ -22,16 +22,44 @@ const reset = () => {
   const formu = document.getElementById('formProduct');
   formu.reset()
 }
+var contador = 1
+const increase = () => {
+  contador++
+  document.getElementById("counter").innerHTML = contador;
+}
+
+const decrease = () => {
+  if(contador > 1){
+    contador--
+    document.getElementById("counter").innerHTML = contador;
+  }
+}
 
 const addProductToCart = (pid) => {
-  socket.emit('addToCart',user.cartId ,pid, 1)
-  const button = document.getElementById('addButton')
-  button.remove()
-  const div = document.getElementById('div-body')
-  var nuevoParrafo = document.createElement("h5");
-      nuevoParrafo.textContent = "Producto Agregado al carrito"
-  div.appendChild(nuevoParrafo)
+  socket.emit('addToCart',user.cartId ,pid, contador)
 }
+
+socket.on('addToCartResponse', (response) => {
+  if(response.error){
+    Toastify({
+      text: `${response.error}`,
+      duration: 3000,
+      close: true,
+      gravity: "bottom",
+      position: "right",
+      stopOnFocus: true, 
+      style: {
+        background: "linear-gradient(to right, #ed213a, #93291e)",
+      },
+    }).showToast();  } else{
+      const button = document.getElementById('addButton')
+      button.remove()
+      const div = document.getElementById('div-body')
+      var nuevoParrafo = document.createElement("h5");
+          nuevoParrafo.textContent = "Product added to your cart"
+      div.appendChild(nuevoParrafo)
+    }
+})
 
 socket.on('dataUpdated', (products) => {
   console.log(products)
@@ -84,3 +112,11 @@ radioBtn.forEach(radioBtn => {
   radioBtn.addEventListener('change', findSelected)
 })
 
+const changeRoleForm = document.getElementById('changeRole')
+const changeRole = (id) => {
+  const select = document.getElementById('changeRoleSelect')
+  console.log(select.value)
+  socket.emit('changeRole', {id: id, role: select.value})
+  
+}
+// changeRoleForm.addEventListener('submit', changeRole)
