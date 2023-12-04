@@ -3,7 +3,7 @@
   <div class="users-container h-100 p-3">
     {{#each users}}
         <div class="card-deck ">
-          <div class="card">
+          <div class="card" data-id={{this.id}}>
               <div class="card-body">
                 <h5 class="card-title">{{this.name}}</h5>
                 <p class="card-text">Role: {{this.role}}</p>
@@ -15,7 +15,7 @@
                     <option value="premium">Premium</option>
                     <option value="admin">Admin</option>
                   </select>
-                  <button class="btn btn-outline-secondary" onclick='changeRole("{{this.id}}")'>Change</button>
+                  <button class="btn btn-outline-secondary">Change</button>
                 </div>
             </div>
             <div class="card-footer">

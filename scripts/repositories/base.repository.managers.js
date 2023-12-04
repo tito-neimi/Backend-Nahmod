@@ -45,7 +45,6 @@ async delete (id) {
     try {
       const updateObject = { $set: {} };
       updateObject.$set[prop] = data;
-      console.log(`Data: ${data}, Prop: ${prop}, id: ${id}`)
       const result = await this.model.updateOne({ _id: id }, updateObject);
   
       console.log("resultado: ", result);

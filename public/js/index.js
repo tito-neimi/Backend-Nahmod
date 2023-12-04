@@ -126,11 +126,32 @@ radioBtn.forEach(radioBtn => {
   radioBtn.addEventListener('change', findSelected)
 })
 
-const changeRoleForm = document.getElementById('changeRole')
-const changeRole = (id) => {
-  const select = document.getElementById('changeRoleSelect')
-  console.log(select.value)
-  socket.emit('changeRole', {id: id, role: select.value})
+// const changeRole = (id) => {
+//   const select = document.getElementById('changeRoleSelect')
+//   console.log("valor del select",select.value)
+//   socket.emit('changeRole', {id: id, role: select.value})
   
-}
-// changeRoleForm.addEventListener('submit', changeRole)
+// }
+let cards = document.querySelectorAll('.card');
+
+cards.forEach(card => {
+  let button = card.querySelector('button');
+  let select = card.querySelector('select');
+  let id = card.getAttribute('data-id')
+
+  button.addEventListener('click', function() {
+    console.log(`id: ${id}, role: ${select.value}`)
+    socket.emit('changeRole', {id: id, role: select.value});
+    Toastify({
+      text: `Rol cambiado con exito`,
+      duration: 3000,
+      close: true,
+      gravity: "bottom",
+      position: "right",
+      stopOnFocus: true, 
+      style: {
+        background: "linear-gradient(to right, #b6f492, #33935b)",
+      },
+    }).showToast()
+  });
+});
