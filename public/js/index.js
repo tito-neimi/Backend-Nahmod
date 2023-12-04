@@ -36,6 +36,20 @@ const decrease = () => {
 }
 
 const addProductToCart = (pid) => {
+  if(!user){
+    Toastify({
+      text: `You have to log in to be able to add products to your cart.`,
+      duration: 3000,
+      close: true,
+      gravity: "bottom",
+      position: "right",
+      stopOnFocus: true, 
+      style: {
+        background: "linear-gradient(to right, #ed213a, #93291e)",
+      },
+    }).showToast();
+    return
+  }
   socket.emit('addToCart',user.cartId ,pid, contador)
 }
 

@@ -2,9 +2,8 @@
   <h2 class="text-center my-5">Users Dashboard</h2>
   <div class="users-container h-100 p-3">
     {{#each users}}
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-          <div class="col">
-            <div class="card h-100">
+        <div class="card-deck ">
+          <div class="card">
               <div class="card-body">
                 <h5 class="card-title">{{this.name}}</h5>
                 <p class="card-text">Role: {{this.role}}</p>

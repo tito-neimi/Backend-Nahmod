@@ -11,7 +11,7 @@ class Dto{
   }
 
   mainData(user){
-    const newUser = {name: `${user.firstName + user.lastName}`, email: user.email, role: user.role, lastConection: user.lastConection, id: user._id}
+    const newUser = {name: `${user.firstName} ${user.lastName}`, email: user.email, role: user.role, lastConection: user.lastConection, id: user._id}
     return(newUser)
   }
 }
